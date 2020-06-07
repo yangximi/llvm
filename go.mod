@@ -9,5 +9,5 @@ require (
 	github.com/llir/ll v0.0.0-20200425014433-60cd8feecf92
 	github.com/mewmew/float v0.0.0-20191226120903-16bbe2fdd85e
 	github.com/pkg/errors v0.9.1
-	golang.org/x/tools v0.0.0-20200504193531-9bfbc385433f
+	golang.org/x/tools v0.0.0-20200604183345-4d5ea46c79fe
 )
