@@ -71,3 +71,11 @@ func (block *Block) LLString() string {
 	fmt.Fprintf(buf, "\t%s", block.Term.LLString())
 	return buf.String()
 }
+func (block *Block) Hash() string {
+	buf := &strings.Builder{}
+	for _, inst := range block.Insts {
+		fmt.Fprintf(buf, "\t%s\n", inst.Hash())
+	}
+	fmt.Fprintf(buf, "\t%s", block.Term.Hash())
+	return buf.String()
+}

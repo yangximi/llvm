@@ -28,6 +28,8 @@ type InstFNeg struct {
 	FastMathFlags []enum.FastMathFlag
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFNeg returns a new fneg instruction based on the given operand.
@@ -43,6 +45,15 @@ func NewFNeg(x value.Value) *InstFNeg {
 func (inst *InstFNeg) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstFNeg) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFNeg) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstFNeg) Type() types.Type {
@@ -64,6 +75,17 @@ func (inst *InstFNeg) LLString() string {
 		fmt.Fprintf(buf, " %s", flag)
 	}
 	fmt.Fprintf(buf, " %s", inst.X)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFNeg) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fneg %s, %s", inst.Type(), inst.X.Type())
+	for _, flag := range inst.FastMathFlags {
+		fmt.Fprintf(buf, " %s", flag)
+	}
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}

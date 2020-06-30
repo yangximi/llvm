@@ -27,6 +27,8 @@ type InstExtractElement struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewExtractElement returns a new extractelement instruction based on the given
@@ -43,6 +45,16 @@ func NewExtractElement(x, index value.Value) *InstExtractElement {
 func (inst *InstExtractElement) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstExtractElement) GetParent() *Block {
+	return inst.Parent
+}
+
+func (inst *InstExtractElement) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstExtractElement) Type() types.Type {
@@ -69,6 +81,14 @@ func (inst *InstExtractElement) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstExtractElement) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "extractelement %s,%s, %s", inst.Type(), inst.X.Type(), inst.Index.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ insertelement ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -89,6 +109,8 @@ type InstInsertElement struct {
 	Typ *types.VectorType
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewInsertElement returns a new insertelement instruction based on the given
@@ -105,6 +127,15 @@ func NewInsertElement(x, elem, index value.Value) *InstInsertElement {
 func (inst *InstInsertElement) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstInsertElement) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstInsertElement) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstInsertElement) Type() types.Type {
@@ -132,6 +163,14 @@ func (inst *InstInsertElement) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstInsertElement) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "insertelement %s, %s, %s, %s", inst.Type(), inst.X.Type(), inst.Elem.Type(), inst.Index.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ shufflevector ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -150,6 +189,8 @@ type InstShuffleVector struct {
 	Typ *types.VectorType
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewShuffleVector returns a new shufflevector instruction based on the given
@@ -166,6 +207,14 @@ func NewShuffleVector(x, y, mask value.Value) *InstShuffleVector {
 func (inst *InstShuffleVector) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+func (inst *InstShuffleVector) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstShuffleVector) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstShuffleVector) Type() types.Type {
@@ -192,6 +241,14 @@ func (inst *InstShuffleVector) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "shufflevector %s, %s, %s", inst.X, inst.Y, inst.Mask)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstShuffleVector) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "shufflevector %s, %s, %s, %s", inst.Type(), inst.X.Type(), inst.Y.Type(), inst.Mask.Type())
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}

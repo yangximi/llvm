@@ -1,12 +1,25 @@
 ; ModuleID = 'CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad.cpp'
+;1.Source filename
 source_filename = "CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad.cpp"
+;2.Data layout
 target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+;3.Target triple
 target triple = "x86_64-apple-macosx10.15.0"
 
+;4.Module-level inline assembly
+
+;5.Type definitions
 %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad" = type { i8* }
 
+;6.Comdat definitions
+
+;7.Global declarations and definitions
 @.str = private unnamed_addr constant [43 x i32] [i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 0], align 4
 
+;8.Aliases
+;9.IFuncs
+
+;10.Function declarations and definitions.
 ; Function Attrs: noinline nounwind optnone ssp uwtable
 define void @_ZN45CWE121_Stack_Based_Buffer_Overflow__CWE135_8449CWE121_Stack_Based_Buffer_Overflow__CWE135_84_badC2EPv(%"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad"*, i8*) unnamed_addr #0 align 2 {
   %3 = alloca %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad"*, align 8
@@ -76,13 +89,16 @@ define void @_ZN45CWE121_Stack_Based_Buffer_Overflow__CWE135_8449CWE121_Stack_Ba
   ret void
 }
 
+;11.Attribute group definitions.
 attributes #0 = { noinline nounwind optnone ssp uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "darwin-stkchk-strong-link" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "probe-stack"="___chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="penryn" "target-features"="+cx16,+cx8,+fxsr,+mmx,+sahf,+sse,+sse2,+sse3,+sse4.1,+ssse3,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { noinline optnone ssp uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "darwin-stkchk-strong-link" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "probe-stack"="___chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="penryn" "target-features"="+cx16,+cx8,+fxsr,+mmx,+sahf,+sse,+sse2,+sse3,+sse4.1,+ssse3,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "darwin-stkchk-strong-link" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "probe-stack"="___chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="penryn" "target-features"="+cx16,+cx8,+fxsr,+mmx,+sahf,+sse,+sse2,+sse3,+sse4.1,+ssse3,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 
+;12.Named metadata definitions; output in natural sorting order.
 !llvm.module.flags = !{!0, !1, !2}
 !llvm.ident = !{!3}
 
+;13.Metadata definitions.
 !0 = !{i32 2, !"SDK Version", [3 x i32] [i32 10, i32 15, i32 4]}
 !1 = !{i32 1, !"wchar_size", i32 4}
 !2 = !{i32 7, !"PIC Level", i32 2}

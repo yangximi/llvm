@@ -12,6 +12,8 @@ github.com/llir/ll v0.0.0-20200425014433-60cd8feecf92 h1:46SWNHwNB1dvOK+9gO3TENa
 github.com/llir/ll v0.0.0-20200425014433-60cd8feecf92/go.mod h1:8W5HJz80PitAyPZUpOcljQxTu6LD5YKW1URTo+OjVoc=
 github.com/mewmew/float v0.0.0-20191226120903-16bbe2fdd85e h1:KCD7E/8LKwDsC5ymlEWJ3xCiSPaCywrS/psToBMOBH4=
 github.com/mewmew/float v0.0.0-20191226120903-16bbe2fdd85e/go.mod h1:O+xb+8ycBNHzJicFVs7GRWtruD4tVZI0huVnw5TM01E=
+github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 h1:RWengNIwukTxcDr9M+97sNutRR1RKhG96O6jWumTTnw=
+github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826/go.mod h1:TaXosZuwdSHYgviHp1DAtfrULt5eUgsSMsZf+YrPgl8=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

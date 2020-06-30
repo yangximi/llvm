@@ -102,6 +102,7 @@ func translate(old *ast.Module) (*ir.Module, error) {
 	gen := newGenerator()
 	// 1. Index AST top-level entities.
 	indexStart := time.Now()
+	// 遍历AST并保存到gen.oldIndex里
 	if err := gen.indexTopLevelEntities(old); err != nil {
 		return nil, errors.WithStack(err)
 	}

@@ -39,6 +39,8 @@ type InstAlloca struct {
 	AddrSpace types.AddrSpace
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewAlloca returns a new alloca instruction based on the given element type.
@@ -54,6 +56,15 @@ func NewAlloca(elemType types.Type) *InstAlloca {
 func (inst *InstAlloca) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstAlloca) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstAlloca) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstAlloca) Type() types.Type {
@@ -93,16 +104,34 @@ func (inst *InstAlloca) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstAlloca) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "alloca %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, "%s", md)
+	}
+	if inst.Align != 0 {
+		fmt.Fprintf(buf, "%s", inst.Align)
+	}
+	if inst.AddrSpace != 0 {
+		fmt.Fprintf(buf, ", %s", inst.AddrSpace)
+	}
+	return buf.String()
+}
 
 // ~~~ [ load ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// example: %8 = load i8*, i8** %1, align 8
 
 // InstLoad is an LLVM IR load instruction.
 type InstLoad struct {
 	// Name of local variable associated with the result.
+	// %8
 	LocalIdent
 	// Element type of src.
+	// i8*
 	ElemType types.Type
 	// Source address.
+	// i8** %1
 	Src value.Value
 
 	// extra.
@@ -116,9 +145,12 @@ type InstLoad struct {
 	// (optional) Atomic memory ordering constraints; zero if not present.
 	Ordering enum.AtomicOrdering
 	// (optional) Alignment; zero if not present.
+	// align 8
 	Align Align
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewLoad returns a new load instruction based on the given element type and
@@ -133,6 +165,15 @@ func NewLoad(elemType types.Type, src value.Value) *InstLoad {
 func (inst *InstLoad) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstLoad) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstLoad) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstLoad) Type() types.Type {
@@ -173,6 +214,21 @@ func (inst *InstLoad) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstLoad) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "alloca %s %s", inst.Type(), inst.Src.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, "%s", md)
+	}
+	if len(inst.SyncScope) > 0 {
+		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
+	}
+	if inst.Align != 0 {
+		fmt.Fprintf(buf, "%s", inst.Align)
+	}
+
+	return buf.String()
+}
 
 // ~~~ [ store ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -197,6 +253,8 @@ type InstStore struct {
 	Align Align
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewStore returns a new store instruction based on the given source value and
@@ -212,6 +270,15 @@ func NewStore(src, dst value.Value) *InstStore {
 	}
 	return &InstStore{Src: src, Dst: dst}
 }
+
+func (inst *InstStore) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstStore) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // LLString returns the LLVM syntax representation of the instruction.
 //
@@ -246,6 +313,29 @@ func (inst *InstStore) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstStore) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "store %s, %s", inst.Src.Type(), inst.Dst.Type())
+	if inst.Atomic {
+		buf.WriteString(" atomic")
+	}
+	if inst.Volatile {
+		buf.WriteString(" volatile")
+	}
+	if len(inst.SyncScope) > 0 {
+		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
+	}
+	if inst.Ordering != enum.AtomicOrderingNone {
+		fmt.Fprintf(buf, " %s", inst.Ordering)
+	}
+	if inst.Align != 0 {
+		fmt.Fprintf(buf, ", %s", inst.Align)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ fence ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -260,6 +350,8 @@ type InstFence struct {
 	SyncScope string
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFence returns a new fence instruction based on the given atomic ordering.
@@ -267,10 +359,31 @@ func NewFence(ordering enum.AtomicOrdering) *InstFence {
 	return &InstFence{Ordering: ordering}
 }
 
+func (inst *InstFence) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFence) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // LLString returns the LLVM syntax representation of the instruction.
 //
 // 'fence' SyncScopeopt Ordering=AtomicOrdering Metadata=(',' MetadataAttachment)+?
 func (inst *InstFence) LLString() string {
+	buf := &strings.Builder{}
+	buf.WriteString("fence")
+	if len(inst.SyncScope) > 0 {
+		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
+	}
+	fmt.Fprintf(buf, " %s", inst.Ordering)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFence) Hash() string {
 	buf := &strings.Builder{}
 	buf.WriteString("fence")
 	if len(inst.SyncScope) > 0 {
@@ -313,6 +426,8 @@ type InstCmpXchg struct {
 	SyncScope string
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCmpXchg returns a new cmpxchg instruction based on the given address,
@@ -330,6 +445,15 @@ func NewCmpXchg(ptr, cmp, new value.Value, successOrdering, failureOrdering enum
 func (inst *InstCmpXchg) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstCmpXchg) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstCmpXchg) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction. The result type is a struct type
 // with two fields, the first field has the type of the old value and the second
@@ -367,6 +491,25 @@ func (inst *InstCmpXchg) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstCmpXchg) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "cmpxchg %s, %s, %s", inst.Ptr.Type(), inst.Cmp.Type(), inst.New.Type())
+	if inst.Weak {
+		buf.WriteString(" weak")
+	}
+	if inst.Volatile {
+		buf.WriteString(" volatile")
+	}
+	if len(inst.SyncScope) > 0 {
+		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
+	}
+	fmt.Fprintf(buf, " %s", inst.SuccessOrdering)
+	fmt.Fprintf(buf, " %s", inst.FailureOrdering)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ atomicrmw ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -393,6 +536,8 @@ type InstAtomicRMW struct {
 	SyncScope string
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewAtomicRMW returns a new atomicrmw instruction based on the given atomic
@@ -409,6 +554,15 @@ func NewAtomicRMW(op enum.AtomicOp, dst, x value.Value, ordering enum.AtomicOrde
 func (inst *InstAtomicRMW) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstAtomicRMW) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstAtomicRMW) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstAtomicRMW) Type() types.Type {
@@ -443,6 +597,22 @@ func (inst *InstAtomicRMW) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstAtomicRMW) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "atomicrmw %s %s, %s", inst.Op, inst.Dst.Type(), inst.X.Type())
+	if inst.Volatile {
+		buf.WriteString(" volatile")
+	}
+
+	if len(inst.SyncScope) > 0 {
+		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
+	}
+	fmt.Fprintf(buf, " %s", inst.Ordering)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ getelementptr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -465,6 +635,8 @@ type InstGetElementPtr struct {
 	InBounds bool
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewGetElementPtr returns a new getelementptr instruction based on the given
@@ -481,6 +653,15 @@ func NewGetElementPtr(elemType types.Type, src value.Value, indices ...value.Val
 func (inst *InstGetElementPtr) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstGetElementPtr) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstGetElementPtr) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstGetElementPtr) Type() types.Type {
@@ -504,6 +685,20 @@ func (inst *InstGetElementPtr) LLString() string {
 	fmt.Fprintf(buf, " %s, %s", inst.ElemType, inst.Src)
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %s", index)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstGetElementPtr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "getelementptr %s, %s, %s", inst.ElemType, inst.Src.Type(), inst.Type())
+	if inst.InBounds {
+		buf.WriteString(" inbounds")
+	}
+	for _, index := range inst.Indices {
+		fmt.Fprintf(buf, ", %s", index.Type())
 	}
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)

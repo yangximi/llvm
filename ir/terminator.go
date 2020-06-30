@@ -36,6 +36,7 @@ type Terminator interface {
 	LLStringer
 	// Succs returns the successor basic blocks of the terminator.
 	Succs() []*Block
+	Hash() string
 }
 
 // --- [ ret ] -----------------------------------------------------------------
@@ -49,6 +50,8 @@ type TermRet struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewRet returns a new ret terminator based on the given return value. A nil
@@ -85,6 +88,19 @@ func (term *TermRet) LLString() string {
 	return buf.String()
 }
 
+func (term *TermRet) Hash() string {
+	buf := &strings.Builder{}
+	if term.X == nil {
+		buf.WriteString("ret void")
+	} else {
+		fmt.Fprintf(buf, "ret %s", term.X)
+	}
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+
 // --- [ br ] ------------------------------------------------------------------
 
 // TermBr is an unconditional LLVM IR br terminator.
@@ -98,6 +114,8 @@ type TermBr struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewBr returns a new unconditional br terminator based on the given target
@@ -127,6 +145,15 @@ func (term *TermBr) LLString() string {
 	return buf.String()
 }
 
+func (term *TermBr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "br %s", term.Target)
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+
 // --- [ conditional br ] ------------------------------------------------------
 
 // TermCondBr is a conditional LLVM IR br terminator.
@@ -144,6 +171,8 @@ type TermCondBr struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCondBr returns a new conditional br terminator based on the given
@@ -172,6 +201,14 @@ func (term *TermCondBr) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermCondBr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "br %s, %s, %s", term.Cond, term.TargetTrue, term.TargetFalse)
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // --- [ switch ] --------------------------------------------------------------
 
@@ -190,6 +227,8 @@ type TermSwitch struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewSwitch returns a new switch terminator based on the given control
@@ -216,6 +255,18 @@ func (term *TermSwitch) Succs() []*Block {
 //
 // 'switch' X=TypeValue ',' Default=Label '[' Cases=Case* ']' Metadata=(',' MetadataAttachment)+?
 func (term *TermSwitch) LLString() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "switch %s, %s [\n", term.X, term.TargetDefault)
+	for _, c := range term.Cases {
+		fmt.Fprintf(buf, "\t\t%s\n", c)
+	}
+	buf.WriteString("\t]")
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (term *TermSwitch) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "switch %s, %s [\n", term.X, term.TargetDefault)
 	for _, c := range term.Cases {
@@ -265,6 +316,8 @@ type TermIndirectBr struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewIndirectBr returns a new indirectbr terminator based on the given target
@@ -295,6 +348,21 @@ func (term *TermIndirectBr) Succs() []*Block {
 //
 // 'indirectbr' Addr=TypeValue ',' '[' ValidTargets=(Label separator ',')* ']' Metadata=(',' MetadataAttachment)+?
 func (term *TermIndirectBr) LLString() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "indirectbr %s, [", term.Addr)
+	for i, target := range term.ValidTargets {
+		if i != 0 {
+			buf.WriteString(", ")
+		}
+		buf.WriteString(target.String())
+	}
+	buf.WriteString("]")
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (term *TermIndirectBr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "indirectbr %s, [", term.Addr)
 	for i, target := range term.ValidTargets {
@@ -348,6 +416,8 @@ type TermInvoke struct {
 	OperandBundles []*OperandBundle
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewInvoke returns a new invoke terminator based on the given invokee,
@@ -438,6 +508,47 @@ func (term *TermInvoke) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermInvoke) Hash() string {
+	buf := &strings.Builder{}
+
+	buf.WriteString("invoke")
+	if term.CallingConv != enum.CallingConvNone {
+		fmt.Fprintf(buf, " %s", callingConvString(term.CallingConv))
+	}
+	for _, attr := range term.ReturnAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	// (optional) Address space.
+	if term.AddrSpace != 0 {
+		fmt.Fprintf(buf, " %s", term.AddrSpace)
+	}
+	// Use function signature instead of return type for variadic functions.
+	invokeeType := term.Type()
+	if sig := term.Sig(); sig.Variadic {
+		invokeeType = sig
+	}
+	fmt.Fprintf(buf, " %s ", invokeeType)
+	for _, arg := range term.Args {
+
+		buf.WriteString(arg.String())
+	}
+
+	for _, attr := range term.FuncAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	if len(term.OperandBundles) > 0 {
+
+		for _, operandBundle := range term.OperandBundles {
+			buf.WriteString(operandBundle.String())
+		}
+
+	}
+	fmt.Fprintf(buf, "\n\t\tto %s unwind %s", term.NormalRetTarget, term.ExceptionRetTarget)
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // Sig returns the function signature of the invokee.
 func (term *TermInvoke) Sig() *types.FuncType {
@@ -490,6 +601,8 @@ type TermCallBr struct {
 	OperandBundles []*OperandBundle
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCallBr returns a new callbr terminator based on the given callee, function
@@ -596,6 +709,46 @@ func (term *TermCallBr) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermCallBr) Hash() string {
+	buf := &strings.Builder{}
+
+	if term.CallingConv != enum.CallingConvNone {
+		fmt.Fprintf(buf, " %s", callingConvString(term.CallingConv))
+	}
+	for _, attr := range term.ReturnAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	// (optional) Address space.
+	if term.AddrSpace != 0 {
+		fmt.Fprintf(buf, " %s", term.AddrSpace)
+	}
+	// Use function signature instead of return type for variadic functions.
+	calleeType := term.Type()
+	if sig := term.Sig(); sig.Variadic {
+		calleeType = sig
+	}
+	fmt.Fprintf(buf, " %s ", calleeType)
+	for _, arg := range term.Args {
+		buf.WriteString(arg.String())
+	}
+
+	for _, attr := range term.FuncAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	if len(term.OperandBundles) > 0 {
+		for _, operandBundle := range term.OperandBundles {
+			buf.WriteString(operandBundle.String())
+		}
+	}
+	fmt.Fprintf(buf, "%s ", term.NormalRetTarget)
+	for _, otherRetTarget := range term.OtherRetTargets {
+		buf.WriteString(otherRetTarget.String())
+	}
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // Sig returns the function signature of the callee.
 func (term *TermCallBr) Sig() *types.FuncType {
@@ -621,6 +774,8 @@ type TermResume struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewResume returns a new resume terminator based on the given exception
@@ -639,6 +794,14 @@ func (term *TermResume) Succs() []*Block {
 //
 // 'resume' X=TypeValue Metadata=(',' MetadataAttachment)+?
 func (term *TermResume) LLString() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "resume %s", term.X)
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (term *TermResume) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "resume %s", term.X)
 	for _, md := range term.Metadata {
@@ -667,6 +830,8 @@ type TermCatchSwitch struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCatchSwitch returns a new catchswitch terminator based on the given parent
@@ -740,6 +905,20 @@ func (term *TermCatchSwitch) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermCatchSwitch) Hash() string {
+	buf := &strings.Builder{}
+
+	for _, handler := range term.Handlers {
+		buf.WriteString(handler.String())
+	}
+	if term.DefaultUnwindTarget != nil {
+		buf.WriteString(term.DefaultUnwindTarget.String())
+	}
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // --- [ catchret ] ------------------------------------------------------------
 
@@ -757,6 +936,8 @@ type TermCatchRet struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCatchRet returns a new catchret terminator based on the given exit
@@ -785,6 +966,14 @@ func (term *TermCatchRet) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermCatchRet) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, " %s", term.Target)
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // --- [ cleanupret ] ----------------------------------------------------------
 
@@ -804,6 +993,8 @@ type TermCleanupRet struct {
 	Successors []*Block
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCleanupRet returns a new cleanupret terminator based on the given exit
@@ -851,6 +1042,16 @@ func (term *TermCleanupRet) LLString() string {
 	}
 	return buf.String()
 }
+func (term *TermCleanupRet) Hash() string {
+	buf := &strings.Builder{}
+	if term.UnwindTarget != nil {
+		buf.WriteString(term.UnwindTarget.String())
+	}
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // --- [ unreachable ] ---------------------------------------------------------
 
@@ -860,6 +1061,8 @@ type TermUnreachable struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewUnreachable returns a new unreachable terminator.
@@ -877,6 +1080,14 @@ func (term *TermUnreachable) Succs() []*Block {
 //
 // 'unreachable' Metadata=(',' MetadataAttachment)+?
 func (term *TermUnreachable) LLString() string {
+	buf := &strings.Builder{}
+	buf.WriteString("unreachable")
+	for _, md := range term.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (term *TermUnreachable) Hash() string {
 	buf := &strings.Builder{}
 	buf.WriteString("unreachable")
 	for _, md := range term.Metadata {

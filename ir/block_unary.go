@@ -13,5 +13,6 @@ import (
 func (block *Block) NewFNeg(x value.Value) *InstFNeg {
 	inst := NewFNeg(x)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

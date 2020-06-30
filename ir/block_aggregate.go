@@ -13,6 +13,7 @@ import (
 func (block *Block) NewExtractValue(x value.Value, indices ...uint64) *InstExtractValue {
 	inst := NewExtractValue(x, indices...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -23,5 +24,6 @@ func (block *Block) NewExtractValue(x value.Value, indices ...uint64) *InstExtra
 func (block *Block) NewInsertValue(x, elem value.Value, indices ...uint64) *InstInsertValue {
 	inst := NewInsertValue(x, elem, indices...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

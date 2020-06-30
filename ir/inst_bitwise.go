@@ -28,6 +28,8 @@ type InstShl struct {
 	OverflowFlags []enum.OverflowFlag
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewShl returns a new shl instruction based on the given operands.
@@ -43,6 +45,15 @@ func NewShl(x, y value.Value) *InstShl {
 func (inst *InstShl) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstShl) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstShl) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstShl) Type() types.Type {
@@ -69,6 +80,14 @@ func (inst *InstShl) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstShl) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "shl %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ lshr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -87,6 +106,8 @@ type InstLShr struct {
 	Exact bool
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewLShr returns a new lshr instruction based on the given operands.
@@ -102,6 +123,15 @@ func NewLShr(x, y value.Value) *InstLShr {
 func (inst *InstLShr) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstLShr) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstLShr) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstLShr) Type() types.Type {
@@ -128,6 +158,14 @@ func (inst *InstLShr) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstLShr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "lshr %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ ashr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -146,6 +184,8 @@ type InstAShr struct {
 	Exact bool
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewAShr returns a new ashr instruction based on the given operands.
@@ -161,6 +201,15 @@ func NewAShr(x, y value.Value) *InstAShr {
 func (inst *InstAShr) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstAShr) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstAShr) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstAShr) Type() types.Type {
@@ -187,6 +236,14 @@ func (inst *InstAShr) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstAShr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "ashr %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ and ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -203,6 +260,8 @@ type InstAnd struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewAnd returns a new and instruction based on the given operands.
@@ -218,6 +277,15 @@ func NewAnd(x, y value.Value) *InstAnd {
 func (inst *InstAnd) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstAnd) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstAnd) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstAnd) Type() types.Type {
@@ -240,6 +308,14 @@ func (inst *InstAnd) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstAnd) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "and %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ or ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -256,6 +332,8 @@ type InstOr struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewOr returns a new or instruction based on the given operands.
@@ -271,6 +349,15 @@ func NewOr(x, y value.Value) *InstOr {
 func (inst *InstOr) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstOr) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstOr) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstOr) Type() types.Type {
@@ -293,6 +380,14 @@ func (inst *InstOr) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstOr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "or %s", inst.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ xor ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -309,6 +404,8 @@ type InstXor struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewXor returns a new xor instruction based on the given operands.
@@ -324,6 +421,15 @@ func NewXor(x, y value.Value) *InstXor {
 func (inst *InstXor) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstXor) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstXor) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstXor) Type() types.Type {
@@ -341,6 +447,14 @@ func (inst *InstXor) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "xor %s, %s", inst.X, inst.Y.Ident())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstXor) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "xor %s", inst.Type())
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}

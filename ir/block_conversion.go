@@ -14,6 +14,7 @@ import (
 func (block *Block) NewTrunc(from value.Value, to types.Type) *InstTrunc {
 	inst := NewTrunc(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -24,6 +25,7 @@ func (block *Block) NewTrunc(from value.Value, to types.Type) *InstTrunc {
 func (block *Block) NewZExt(from value.Value, to types.Type) *InstZExt {
 	inst := NewZExt(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -34,6 +36,7 @@ func (block *Block) NewZExt(from value.Value, to types.Type) *InstZExt {
 func (block *Block) NewSExt(from value.Value, to types.Type) *InstSExt {
 	inst := NewSExt(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -44,6 +47,7 @@ func (block *Block) NewSExt(from value.Value, to types.Type) *InstSExt {
 func (block *Block) NewFPTrunc(from value.Value, to types.Type) *InstFPTrunc {
 	inst := NewFPTrunc(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -54,6 +58,7 @@ func (block *Block) NewFPTrunc(from value.Value, to types.Type) *InstFPTrunc {
 func (block *Block) NewFPExt(from value.Value, to types.Type) *InstFPExt {
 	inst := NewFPExt(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -64,6 +69,7 @@ func (block *Block) NewFPExt(from value.Value, to types.Type) *InstFPExt {
 func (block *Block) NewFPToUI(from value.Value, to types.Type) *InstFPToUI {
 	inst := NewFPToUI(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -74,6 +80,7 @@ func (block *Block) NewFPToUI(from value.Value, to types.Type) *InstFPToUI {
 func (block *Block) NewFPToSI(from value.Value, to types.Type) *InstFPToSI {
 	inst := NewFPToSI(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -84,6 +91,7 @@ func (block *Block) NewFPToSI(from value.Value, to types.Type) *InstFPToSI {
 func (block *Block) NewUIToFP(from value.Value, to types.Type) *InstUIToFP {
 	inst := NewUIToFP(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -94,6 +102,7 @@ func (block *Block) NewUIToFP(from value.Value, to types.Type) *InstUIToFP {
 func (block *Block) NewSIToFP(from value.Value, to types.Type) *InstSIToFP {
 	inst := NewSIToFP(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -104,6 +113,7 @@ func (block *Block) NewSIToFP(from value.Value, to types.Type) *InstSIToFP {
 func (block *Block) NewPtrToInt(from value.Value, to types.Type) *InstPtrToInt {
 	inst := NewPtrToInt(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -114,6 +124,7 @@ func (block *Block) NewPtrToInt(from value.Value, to types.Type) *InstPtrToInt {
 func (block *Block) NewIntToPtr(from value.Value, to types.Type) *InstIntToPtr {
 	inst := NewIntToPtr(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -124,6 +135,7 @@ func (block *Block) NewIntToPtr(from value.Value, to types.Type) *InstIntToPtr {
 func (block *Block) NewBitCast(from value.Value, to types.Type) *InstBitCast {
 	inst := NewBitCast(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -134,5 +146,6 @@ func (block *Block) NewBitCast(from value.Value, to types.Type) *InstBitCast {
 func (block *Block) NewAddrSpaceCast(from value.Value, to types.Type) *InstAddrSpaceCast {
 	inst := NewAddrSpaceCast(from, to)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

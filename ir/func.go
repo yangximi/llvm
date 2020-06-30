@@ -150,6 +150,33 @@ func (f *Func) LLString() string {
 		return buf.String()
 	}
 }
+func (f *Func) Hash() string {
+	buf := &strings.Builder{}
+	if len(f.Blocks) == 0 {
+		// Function declaration.
+		buf.WriteString("declare")
+		for _, md := range f.Metadata {
+			fmt.Fprintf(buf, " %s", md)
+		}
+		if f.Linkage != enum.LinkageNone {
+			fmt.Fprintf(buf, " %s", f.Linkage)
+		}
+		buf.WriteString(headerString(f))
+		return buf.String()
+	} else {
+		// Function definition.
+		buf.WriteString("define")
+		if f.Linkage != enum.LinkageNone {
+			fmt.Fprintf(buf, " %s", f.Linkage)
+		}
+		buf.WriteString(headerString(f))
+		for _, md := range f.Metadata {
+			fmt.Fprintf(buf, " %s", md)
+		}
+		fmt.Fprintf(buf, " %s", bodyHash(f))
+		return buf.String()
+	}
+}
 
 // AssignIDs assigns IDs to unnamed local variables.
 func (f *Func) AssignIDs() error {
@@ -294,6 +321,25 @@ func bodyString(body *Func) string {
 			buf.WriteString("\n")
 		}
 		fmt.Fprintf(buf, "%s\n", block.LLString())
+	}
+	if len(body.UseListOrders) > 0 {
+		buf.WriteString("\n")
+	}
+	for _, u := range body.UseListOrders {
+		fmt.Fprintf(buf, "\t%s\n", u)
+	}
+	buf.WriteString("}")
+	return buf.String()
+}
+func bodyHash(body *Func) string {
+	// '{' Blocks=Block+ UseListOrders=UseListOrder* '}'
+	buf := &strings.Builder{}
+	buf.WriteString("{\n")
+	for i, block := range body.Blocks {
+		if i != 0 {
+			buf.WriteString("\n")
+		}
+		fmt.Fprintf(buf, "%s\n", block.Hash())
 	}
 	if len(body.UseListOrders) > 0 {
 		buf.WriteString("\n")

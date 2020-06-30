@@ -3,6 +3,7 @@ source_filename = "CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad.cpp"
 target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-apple-macosx10.15.0"
 
+;Typedef
 %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad" = type { i8* }
 
 @.str = private unnamed_addr constant [43 x i32] [i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 65, i32 0], align 4
@@ -18,6 +19,7 @@ define void @_ZN45CWE121_Stack_Based_Buffer_Overflow__CWE135_8449CWE121_Stack_Ba
   %7 = getelementptr inbounds %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad", %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad"* %5, i32 0, i32 0
   store i8* %6, i8** %7, align 8
   %8 = getelementptr inbounds %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad", %"class.CWE121_Stack_Based_Buffer_Overflow__CWE135_84::CWE121_Stack_Based_Buffer_Overflow__CWE135_84_bad"* %5, i32 0, i32 0
+  %9 = alloca i8*, align 8 
   store i8* bitcast ([43 x i32]* @.str to i8*), i8** %8, align 8
   ret void
 }

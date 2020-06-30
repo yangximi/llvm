@@ -28,6 +28,8 @@ type InstICmp struct {
 	Typ types.Type // boolean or boolean vector
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewICmp returns a new icmp instruction based on the given integer comparison
@@ -44,6 +46,15 @@ func NewICmp(pred enum.IPred, x, y value.Value) *InstICmp {
 func (inst *InstICmp) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstICmp) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstICmp) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction. The result type is either boolean
 // type or vector of booleans type.
@@ -75,6 +86,15 @@ func (inst *InstICmp) LLString() string {
 	return buf.String()
 }
 
+func (inst *InstICmp) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "icmp %s %s %s %s", inst.Type(), inst.Pred, inst.X.Type(), inst.Y.Type())
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+
 // ~~~ [ fcmp ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // InstFCmp is an LLVM IR fcmp instruction.
@@ -94,6 +114,8 @@ type InstFCmp struct {
 	FastMathFlags []enum.FastMathFlag
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFCmp returns a new fcmp instruction based on the given floating-point
@@ -110,6 +132,15 @@ func NewFCmp(pred enum.FPred, x, y value.Value) *InstFCmp {
 func (inst *InstFCmp) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstFCmp) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFCmp) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction. The result type is either boolean
 // type or vector of booleans type.
@@ -144,6 +175,17 @@ func (inst *InstFCmp) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstFCmp) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fcmp %s %s %s %s", inst.Type(), inst.Pred, inst.X.Type(), inst.Y.Type())
+	for _, flag := range inst.FastMathFlags {
+		fmt.Fprintf(buf, " %s", flag)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ phi ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -162,6 +204,8 @@ type InstPhi struct {
 	FastMathFlags []enum.FastMathFlag
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewPhi returns a new phi instruction based on the given incoming values.
@@ -177,6 +221,15 @@ func NewPhi(incs ...*Incoming) *InstPhi {
 func (inst *InstPhi) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstPhi) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstPhi) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction. The result type is the type of the
 // incoming value.
@@ -205,6 +258,20 @@ func (inst *InstPhi) LLString() string {
 		if i != 0 {
 			buf.WriteString(", ")
 		}
+		buf.WriteString(inc.String())
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstPhi) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "phi %s", inst.Type())
+	for _, flag := range inst.FastMathFlags {
+		buf.WriteString(flag.String())
+	}
+	for _, inc := range inst.Incs {
 		buf.WriteString(inc.String())
 	}
 	for _, md := range inst.Metadata {
@@ -256,6 +323,8 @@ type InstSelect struct {
 	FastMathFlags []enum.FastMathFlag
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewSelect returns a new select instruction based on the given selection
@@ -272,6 +341,15 @@ func NewSelect(cond, valueTrue, valueFalse value.Value) *InstSelect {
 func (inst *InstSelect) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstSelect) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstSelect) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstSelect) Type() types.Type {
@@ -298,6 +376,17 @@ func (inst *InstSelect) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstSelect) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "select %s, %s, %s", inst.Cond.Type(), inst.ValueTrue.Type(), inst.ValueFalse.Type())
+	for _, flag := range inst.FastMathFlags {
+		fmt.Fprintf(buf, " %s", flag)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ freeze ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -313,6 +402,8 @@ type InstFreeze struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewInstFreeze returns a new freeze instruction based on the given
@@ -330,6 +421,15 @@ func (inst *InstFreeze) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstFreeze) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFreeze) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstFreeze) Type() types.Type {
 	// Cache type if not present.
@@ -346,6 +446,14 @@ func (inst *InstFreeze) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "freeze %s", inst.X)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFreeze) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "freeze %s", inst.Type())
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -389,6 +497,8 @@ type InstCall struct {
 	OperandBundles []*OperandBundle
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCall returns a new call instruction based on the given callee and function
@@ -407,6 +517,15 @@ func NewCall(callee value.Value, args ...value.Value) *InstCall {
 func (inst *InstCall) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstCall) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstCall) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstCall) Type() types.Type {
@@ -474,6 +593,44 @@ func (inst *InstCall) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstCall) Hash() string { //Fixme
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "call %s %s", inst.Type(), inst.Callee.Ident())
+	if inst.Tail != enum.TailNone {
+		fmt.Fprintf(buf, "%s ", inst.Tail)
+	}
+
+	for _, flag := range inst.FastMathFlags {
+		fmt.Fprintf(buf, " %s", flag)
+	}
+	if inst.CallingConv != enum.CallingConvNone {
+		fmt.Fprintf(buf, " %s", callingConvString(inst.CallingConv))
+	}
+	for _, attr := range inst.ReturnAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	// (optional) Address space.
+	if inst.AddrSpace != 0 {
+		fmt.Fprintf(buf, " %s", inst.AddrSpace)
+	}
+	// Use function signature instead of return type for variadic functions.
+	// for _, arg := range inst.Args {
+	// 	// fmt.Println(arg.String())
+	// 	buf.WriteString(arg.String())
+	// }
+	for _, attr := range inst.FuncAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	if len(inst.OperandBundles) > 0 {
+		for _, operandBundle := range inst.OperandBundles {
+			buf.WriteString(operandBundle.String())
+		}
+	}
+	// for _, md := range inst.Metadata {
+	// 	fmt.Fprintf(buf, ", %s", md)
+	// }
+	return buf.String()
+}
 
 // Sig returns the function signature of the callee.
 func (inst *InstCall) Sig() *types.FuncType {
@@ -503,6 +660,8 @@ type InstVAArg struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewVAArg returns a new va_arg instruction based on the given variable
@@ -517,6 +676,15 @@ func (inst *InstVAArg) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstVAArg) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstVAArg) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstVAArg) Type() types.Type {
 	return inst.ArgType
@@ -529,6 +697,14 @@ func (inst *InstVAArg) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "va_arg %s, %s", inst.ArgList, inst.ArgType)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstVAArg) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "va_arg %s, %s, %s", inst.Type(), inst.ArgList.Type(), inst.ArgType)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -553,6 +729,8 @@ type InstLandingPad struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewLandingPad returns a new landingpad instruction based on the given result
@@ -566,6 +744,15 @@ func NewLandingPad(resultType types.Type, clauses ...*Clause) *InstLandingPad {
 func (inst *InstLandingPad) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstLandingPad) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstLandingPad) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstLandingPad) Type() types.Type {
@@ -584,6 +771,18 @@ func (inst *InstLandingPad) LLString() string {
 	}
 	for _, clause := range inst.Clauses {
 		fmt.Fprintf(buf, "\n\t\t%s", clause)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstLandingPad) Hash() string {
+	buf := &strings.Builder{}
+
+	fmt.Fprintf(buf, "landingpad %s", inst.Type())
+	for _, clause := range inst.Clauses {
+		fmt.Fprintf(buf, "%s", clause)
 	}
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
@@ -631,6 +830,8 @@ type InstCatchPad struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCatchPad returns a new catchpad instruction based on the given parent
@@ -644,6 +845,15 @@ func NewCatchPad(catchSwitch *TermCatchSwitch, args ...value.Value) *InstCatchPa
 func (inst *InstCatchPad) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstCatchPad) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstCatchPad) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstCatchPad) Type() types.Type {
@@ -669,6 +879,18 @@ func (inst *InstCatchPad) LLString() string {
 	}
 	return buf.String()
 }
+func (inst *InstCatchPad) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "catchpad %s,%s", inst.Type(), inst.CatchSwitch.Type())
+	for _, arg := range inst.Args {
+		buf.WriteString(arg.String())
+	}
+
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
 
 // ~~~ [ cleanuppad ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -689,6 +911,8 @@ type InstCleanupPad struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewCleanupPad returns a new cleanuppad instruction based on the given
@@ -702,6 +926,15 @@ func NewCleanupPad(parentPad ExceptionPad, args ...value.Value) *InstCleanupPad 
 func (inst *InstCleanupPad) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
+
+func (inst *InstCleanupPad) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstCleanupPad) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
 func (inst *InstCleanupPad) Type() types.Type {
@@ -722,6 +955,17 @@ func (inst *InstCleanupPad) LLString() string {
 		buf.WriteString(arg.String())
 	}
 	buf.WriteString("]")
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstCleanupPad) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "cleanuppad %s, %s", inst.Type(), inst.ParentPad.Type())
+	for _, arg := range inst.Args {
+		buf.WriteString(arg.String())
+	}
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}

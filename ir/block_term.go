@@ -14,6 +14,7 @@ import (
 func (block *Block) NewRet(x value.Value) *TermRet {
 	term := NewRet(x)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -24,6 +25,7 @@ func (block *Block) NewRet(x value.Value) *TermRet {
 func (block *Block) NewBr(target *Block) *TermBr {
 	term := NewBr(target)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -35,6 +37,7 @@ func (block *Block) NewBr(target *Block) *TermBr {
 func (block *Block) NewCondBr(cond value.Value, targetTrue, targetFalse *Block) *TermCondBr {
 	term := NewCondBr(cond, targetTrue, targetFalse)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -46,6 +49,7 @@ func (block *Block) NewCondBr(cond value.Value, targetTrue, targetFalse *Block) 
 func (block *Block) NewSwitch(x value.Value, targetDefault *Block, cases ...*Case) *TermSwitch {
 	term := NewSwitch(x, targetDefault, cases...)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -57,6 +61,7 @@ func (block *Block) NewSwitch(x value.Value, targetDefault *Block, cases ...*Cas
 func (block *Block) NewIndirectBr(addr constant.Constant, validTargets ...*Block) *TermIndirectBr {
 	term := NewIndirectBr(addr, validTargets...)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -70,6 +75,7 @@ func (block *Block) NewIndirectBr(addr constant.Constant, validTargets ...*Block
 func (block *Block) NewInvoke(invokee value.Value, args []value.Value, normalRetTarget, exceptionRetTarget *Block) *TermInvoke {
 	term := NewInvoke(invokee, args, normalRetTarget, exceptionRetTarget)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -83,6 +89,7 @@ func (block *Block) NewInvoke(invokee value.Value, args []value.Value, normalRet
 func (block *Block) NewCallBr(callee value.Value, args []value.Value, normalRetTarget *Block, otherRetTargets ...*Block) *TermCallBr {
 	term := NewCallBr(callee, args, normalRetTarget, otherRetTargets...)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -93,6 +100,7 @@ func (block *Block) NewCallBr(callee value.Value, args []value.Value, normalRetT
 func (block *Block) NewResume(x value.Value) *TermResume {
 	term := NewResume(x)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -105,6 +113,7 @@ func (block *Block) NewResume(x value.Value) *TermResume {
 func (block *Block) NewCatchSwitch(parentPad ExceptionPad, handlers []*Block, defaultUnwindTarget *Block) *TermCatchSwitch {
 	term := NewCatchSwitch(parentPad, handlers, defaultUnwindTarget)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -126,6 +135,7 @@ func (block *Block) NewCatchRet(catchPad *InstCatchPad, target *Block) *TermCatc
 func (block *Block) NewCleanupRet(cleanupPad *InstCleanupPad, unwindTarget *Block) *TermCleanupRet {
 	term := NewCleanupRet(cleanupPad, unwindTarget)
 	block.Term = term
+	term.Parent = block
 	return term
 }
 
@@ -136,5 +146,6 @@ func (block *Block) NewCleanupRet(cleanupPad *InstCleanupPad, unwindTarget *Bloc
 func (block *Block) NewUnreachable() *TermUnreachable {
 	term := NewUnreachable()
 	block.Term = term
+	term.Parent = block
 	return term
 }

@@ -27,6 +27,8 @@ type InstExtractValue struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewExtractValue returns a new extractvalue instruction based on the given
@@ -44,6 +46,15 @@ func (inst *InstExtractValue) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstExtractValue) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstExtractValue) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstExtractValue) Type() types.Type {
 	// Cache type if not present.
@@ -60,6 +71,17 @@ func (inst *InstExtractValue) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "extractvalue %s", inst.X)
+	for _, index := range inst.Indices {
+		fmt.Fprintf(buf, ", %d", index)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstExtractValue) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "extractvalue %s", inst.Type())
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %d", index)
 	}
@@ -88,6 +110,8 @@ type InstInsertValue struct {
 	Typ types.Type
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewInsertValue returns a new insertvalue instruction based on the given
@@ -109,6 +133,15 @@ func (inst *InstInsertValue) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstInsertValue) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstInsertValue) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstInsertValue) Type() types.Type {
 	// Cache type if not present.
@@ -125,6 +158,17 @@ func (inst *InstInsertValue) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "insertvalue %s, %s", inst.X, inst.Elem)
+	for _, index := range inst.Indices {
+		fmt.Fprintf(buf, ", %d", index)
+	}
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstInsertValue) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "insertvalue %s, %s", inst.Type(), inst.Elem.Type())
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %d", index)
 	}

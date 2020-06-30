@@ -15,6 +15,7 @@ import (
 func (block *Block) NewICmp(pred enum.IPred, x, y value.Value) *InstICmp {
 	inst := NewICmp(pred, x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -26,6 +27,7 @@ func (block *Block) NewICmp(pred enum.IPred, x, y value.Value) *InstICmp {
 func (block *Block) NewFCmp(pred enum.FPred, x, y value.Value) *InstFCmp {
 	inst := NewFCmp(pred, x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -36,6 +38,7 @@ func (block *Block) NewFCmp(pred enum.FPred, x, y value.Value) *InstFCmp {
 func (block *Block) NewPhi(incs ...*Incoming) *InstPhi {
 	inst := NewPhi(incs...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -46,6 +49,7 @@ func (block *Block) NewPhi(incs ...*Incoming) *InstPhi {
 func (block *Block) NewSelect(cond, valueTrue, valueFalse value.Value) *InstSelect {
 	inst := NewSelect(cond, valueTrue, valueFalse)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -58,6 +62,7 @@ func (block *Block) NewSelect(cond, valueTrue, valueFalse value.Value) *InstSele
 func (block *Block) NewCall(callee value.Value, args ...value.Value) *InstCall {
 	inst := NewCall(callee, args...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -68,6 +73,7 @@ func (block *Block) NewCall(callee value.Value, args ...value.Value) *InstCall {
 func (block *Block) NewVAArg(vaList value.Value, argType types.Type) *InstVAArg {
 	inst := NewVAArg(vaList, argType)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -78,6 +84,7 @@ func (block *Block) NewVAArg(vaList value.Value, argType types.Type) *InstVAArg 
 func (block *Block) NewLandingPad(resultType types.Type, clauses ...*Clause) *InstLandingPad {
 	inst := NewLandingPad(resultType, clauses...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -88,6 +95,7 @@ func (block *Block) NewLandingPad(resultType types.Type, clauses ...*Clause) *In
 func (block *Block) NewCatchPad(catchSwitch *TermCatchSwitch, args ...value.Value) *InstCatchPad {
 	inst := NewCatchPad(catchSwitch, args...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -98,5 +106,6 @@ func (block *Block) NewCatchPad(catchSwitch *TermCatchSwitch, args ...value.Valu
 func (block *Block) NewCleanupPad(parentPad ExceptionPad, args ...value.Value) *InstCleanupPad {
 	inst := NewCleanupPad(parentPad, args...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

@@ -25,6 +25,8 @@ type InstTrunc struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewTrunc returns a new trunc instruction based on the given source value and
@@ -66,6 +68,15 @@ func (inst *InstTrunc) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstTrunc) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstTrunc) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstTrunc) Type() types.Type {
 	return inst.To
@@ -78,6 +89,14 @@ func (inst *InstTrunc) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "trunc %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstTrunc) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "trunc %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -99,6 +118,8 @@ type InstZExt struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewZExt returns a new zext instruction based on the given source value and
@@ -113,6 +134,15 @@ func (inst *InstZExt) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstZExt) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstZExt) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstZExt) Type() types.Type {
 	return inst.To
@@ -125,6 +155,14 @@ func (inst *InstZExt) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "zext %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstZExt) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "zext %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -146,6 +184,8 @@ type InstSExt struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewSExt returns a new sext instruction based on the given source value and
@@ -160,6 +200,15 @@ func (inst *InstSExt) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstSExt) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstSExt) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstSExt) Type() types.Type {
 	return inst.To
@@ -172,6 +221,14 @@ func (inst *InstSExt) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "sext %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstSExt) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "sext %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -193,6 +250,8 @@ type InstFPTrunc struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFPTrunc returns a new fptrunc instruction based on the given source value
@@ -207,6 +266,15 @@ func (inst *InstFPTrunc) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstFPTrunc) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFPTrunc) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstFPTrunc) Type() types.Type {
 	return inst.To
@@ -219,6 +287,14 @@ func (inst *InstFPTrunc) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "fptrunc %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFPTrunc) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fptrunc %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -240,6 +316,8 @@ type InstFPExt struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFPExt returns a new fpext instruction based on the given source value and
@@ -254,6 +332,15 @@ func (inst *InstFPExt) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstFPExt) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFPExt) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstFPExt) Type() types.Type {
 	return inst.To
@@ -266,6 +353,14 @@ func (inst *InstFPExt) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "fpext %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFPExt) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fpext %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -287,6 +382,8 @@ type InstFPToUI struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFPToUI returns a new fptoui instruction based on the given source value
@@ -301,6 +398,15 @@ func (inst *InstFPToUI) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstFPToUI) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFPToUI) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstFPToUI) Type() types.Type {
 	return inst.To
@@ -313,6 +419,14 @@ func (inst *InstFPToUI) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "fptoui %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFPToUI) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fptoui %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -334,6 +448,8 @@ type InstFPToSI struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewFPToSI returns a new fptosi instruction based on the given source value
@@ -348,6 +464,15 @@ func (inst *InstFPToSI) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstFPToSI) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstFPToSI) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstFPToSI) Type() types.Type {
 	return inst.To
@@ -360,6 +485,14 @@ func (inst *InstFPToSI) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "fptosi %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstFPToSI) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "fptosi %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -381,6 +514,8 @@ type InstUIToFP struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewUIToFP returns a new uitofp instruction based on the given source value
@@ -395,6 +530,15 @@ func (inst *InstUIToFP) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstUIToFP) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstUIToFP) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstUIToFP) Type() types.Type {
 	return inst.To
@@ -407,6 +551,14 @@ func (inst *InstUIToFP) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "uitofp %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstUIToFP) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "uitofp %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -428,6 +580,8 @@ type InstSIToFP struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewSIToFP returns a new sitofp instruction based on the given source value
@@ -442,6 +596,15 @@ func (inst *InstSIToFP) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstSIToFP) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstSIToFP) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstSIToFP) Type() types.Type {
 	return inst.To
@@ -454,6 +617,14 @@ func (inst *InstSIToFP) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "sitofp %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstSIToFP) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "sitofp %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -475,6 +646,8 @@ type InstPtrToInt struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewPtrToInt returns a new ptrtoint instruction based on the given source
@@ -489,6 +662,15 @@ func (inst *InstPtrToInt) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstPtrToInt) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstPtrToInt) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstPtrToInt) Type() types.Type {
 	return inst.To
@@ -501,6 +683,14 @@ func (inst *InstPtrToInt) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "ptrtoint %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstPtrToInt) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "ptrtoint %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -522,6 +712,8 @@ type InstIntToPtr struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewIntToPtr returns a new inttoptr instruction based on the given source
@@ -536,6 +728,15 @@ func (inst *InstIntToPtr) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstIntToPtr) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstIntToPtr) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstIntToPtr) Type() types.Type {
 	return inst.To
@@ -548,6 +749,14 @@ func (inst *InstIntToPtr) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "inttoptr %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstIntToPtr) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "inttoptr %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -569,6 +778,8 @@ type InstBitCast struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewBitCast returns a new bitcast instruction based on the given source value
@@ -583,6 +794,15 @@ func (inst *InstBitCast) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstBitCast) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstBitCast) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstBitCast) Type() types.Type {
 	return inst.To
@@ -595,6 +815,14 @@ func (inst *InstBitCast) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "bitcast %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstBitCast) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "bitcast %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}
@@ -616,6 +844,8 @@ type InstAddrSpaceCast struct {
 
 	// (optional) Metadata.
 	Metadata
+	//parent
+	Parent *Block
 }
 
 // NewAddrSpaceCast returns a new addrspacecast instruction based on the given
@@ -630,6 +860,15 @@ func (inst *InstAddrSpaceCast) String() string {
 	return fmt.Sprintf("%s %s", inst.Type(), inst.Ident())
 }
 
+func (inst *InstAddrSpaceCast) GetParent() *Block {
+	return inst.Parent
+}
+func (inst *InstAddrSpaceCast) SetParent(b *Block) {
+	inst.Parent = b
+}
+
+//func (inst *) equal(other *i) {return false}
+
 // Type returns the type of the instruction.
 func (inst *InstAddrSpaceCast) Type() types.Type {
 	return inst.To
@@ -642,6 +881,14 @@ func (inst *InstAddrSpaceCast) LLString() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s = ", inst.Ident())
 	fmt.Fprintf(buf, "addrspacecast %s to %s", inst.From, inst.To)
+	for _, md := range inst.Metadata {
+		fmt.Fprintf(buf, ", %s", md)
+	}
+	return buf.String()
+}
+func (inst *InstAddrSpaceCast) Hash() string {
+	buf := &strings.Builder{}
+	fmt.Fprintf(buf, "addrspacecast %s to %s", inst.From.Type(), inst.To)
 	for _, md := range inst.Metadata {
 		fmt.Fprintf(buf, ", %s", md)
 	}

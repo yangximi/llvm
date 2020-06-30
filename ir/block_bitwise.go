@@ -13,6 +13,7 @@ import (
 func (block *Block) NewShl(x, y value.Value) *InstShl {
 	inst := NewShl(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -23,6 +24,7 @@ func (block *Block) NewShl(x, y value.Value) *InstShl {
 func (block *Block) NewLShr(x, y value.Value) *InstLShr {
 	inst := NewLShr(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -33,6 +35,7 @@ func (block *Block) NewLShr(x, y value.Value) *InstLShr {
 func (block *Block) NewAShr(x, y value.Value) *InstAShr {
 	inst := NewAShr(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -43,6 +46,7 @@ func (block *Block) NewAShr(x, y value.Value) *InstAShr {
 func (block *Block) NewAnd(x, y value.Value) *InstAnd {
 	inst := NewAnd(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -53,6 +57,7 @@ func (block *Block) NewAnd(x, y value.Value) *InstAnd {
 func (block *Block) NewOr(x, y value.Value) *InstOr {
 	inst := NewOr(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -63,5 +68,6 @@ func (block *Block) NewOr(x, y value.Value) *InstOr {
 func (block *Block) NewXor(x, y value.Value) *InstXor {
 	inst := NewXor(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

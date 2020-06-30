@@ -114,6 +114,8 @@ func (fgen *funcGen) newLocals(oldBlocks []ast.BasicBlock) error {
 			block.Insts = make([]ir.Instruction, len(oldInsts))
 			for j, oldInst := range oldInsts {
 				inst, err := fgen.newInst(oldInst)
+				//set Parent
+				inst.SetParent(block)
 				if err != nil {
 					return errors.WithStack(err)
 				}

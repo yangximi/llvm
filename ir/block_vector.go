@@ -13,6 +13,7 @@ import (
 func (block *Block) NewExtractElement(x, index value.Value) *InstExtractElement {
 	inst := NewExtractElement(x, index)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -23,6 +24,7 @@ func (block *Block) NewExtractElement(x, index value.Value) *InstExtractElement 
 func (block *Block) NewInsertElement(x, elem, index value.Value) *InstInsertElement {
 	inst := NewInsertElement(x, elem, index)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -33,5 +35,6 @@ func (block *Block) NewInsertElement(x, elem, index value.Value) *InstInsertElem
 func (block *Block) NewShuffleVector(x, y, mask value.Value) *InstShuffleVector {
 	inst := NewShuffleVector(x, y, mask)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

@@ -13,6 +13,7 @@ import (
 func (block *Block) NewAdd(x, y value.Value) *InstAdd {
 	inst := NewAdd(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -23,6 +24,7 @@ func (block *Block) NewAdd(x, y value.Value) *InstAdd {
 func (block *Block) NewFAdd(x, y value.Value) *InstFAdd {
 	inst := NewFAdd(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -33,6 +35,7 @@ func (block *Block) NewFAdd(x, y value.Value) *InstFAdd {
 func (block *Block) NewSub(x, y value.Value) *InstSub {
 	inst := NewSub(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -43,6 +46,7 @@ func (block *Block) NewSub(x, y value.Value) *InstSub {
 func (block *Block) NewFSub(x, y value.Value) *InstFSub {
 	inst := NewFSub(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -53,6 +57,7 @@ func (block *Block) NewFSub(x, y value.Value) *InstFSub {
 func (block *Block) NewMul(x, y value.Value) *InstMul {
 	inst := NewMul(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -63,6 +68,7 @@ func (block *Block) NewMul(x, y value.Value) *InstMul {
 func (block *Block) NewFMul(x, y value.Value) *InstFMul {
 	inst := NewFMul(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -73,6 +79,7 @@ func (block *Block) NewFMul(x, y value.Value) *InstFMul {
 func (block *Block) NewUDiv(x, y value.Value) *InstUDiv {
 	inst := NewUDiv(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -83,6 +90,7 @@ func (block *Block) NewUDiv(x, y value.Value) *InstUDiv {
 func (block *Block) NewSDiv(x, y value.Value) *InstSDiv {
 	inst := NewSDiv(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -93,6 +101,7 @@ func (block *Block) NewSDiv(x, y value.Value) *InstSDiv {
 func (block *Block) NewFDiv(x, y value.Value) *InstFDiv {
 	inst := NewFDiv(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -103,6 +112,7 @@ func (block *Block) NewFDiv(x, y value.Value) *InstFDiv {
 func (block *Block) NewURem(x, y value.Value) *InstURem {
 	inst := NewURem(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -113,6 +123,7 @@ func (block *Block) NewURem(x, y value.Value) *InstURem {
 func (block *Block) NewSRem(x, y value.Value) *InstSRem {
 	inst := NewSRem(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -123,5 +134,6 @@ func (block *Block) NewSRem(x, y value.Value) *InstSRem {
 func (block *Block) NewFRem(x, y value.Value) *InstFRem {
 	inst := NewFRem(x, y)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

@@ -15,6 +15,7 @@ import (
 func (block *Block) NewAlloca(elemType types.Type) *InstAlloca {
 	inst := NewAlloca(elemType)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -25,6 +26,7 @@ func (block *Block) NewAlloca(elemType types.Type) *InstAlloca {
 func (block *Block) NewLoad(elemType types.Type, src value.Value) *InstLoad {
 	inst := NewLoad(elemType, src)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -35,6 +37,7 @@ func (block *Block) NewLoad(elemType types.Type, src value.Value) *InstLoad {
 func (block *Block) NewStore(src, dst value.Value) *InstStore {
 	inst := NewStore(src, dst)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -45,6 +48,7 @@ func (block *Block) NewStore(src, dst value.Value) *InstStore {
 func (block *Block) NewFence(ordering enum.AtomicOrdering) *InstFence {
 	inst := NewFence(ordering)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -56,6 +60,7 @@ func (block *Block) NewFence(ordering enum.AtomicOrdering) *InstFence {
 func (block *Block) NewCmpXchg(ptr, cmp, new value.Value, successOrdering, failureOrdering enum.AtomicOrdering) *InstCmpXchg {
 	inst := NewCmpXchg(ptr, cmp, new, successOrdering, failureOrdering)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -66,6 +71,7 @@ func (block *Block) NewCmpXchg(ptr, cmp, new value.Value, successOrdering, failu
 func (block *Block) NewAtomicRMW(op enum.AtomicOp, dst, x value.Value, ordering enum.AtomicOrdering) *InstAtomicRMW {
 	inst := NewAtomicRMW(op, dst, x, ordering)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }
 
@@ -76,5 +82,6 @@ func (block *Block) NewAtomicRMW(op enum.AtomicOp, dst, x value.Value, ordering 
 func (block *Block) NewGetElementPtr(elemType types.Type, src value.Value, indices ...value.Value) *InstGetElementPtr {
 	inst := NewGetElementPtr(elemType, src, indices...)
 	block.Insts = append(block.Insts, inst)
+	inst.Parent = block
 	return inst
 }

@@ -103,7 +103,10 @@ package ir
 //    *ir.InstCleanupPad   // https://godoc.org/github.com/llir/llvm/ir#InstCleanupPad
 type Instruction interface {
 	LLStringer
+	GetParent() *Block
+	SetParent(*Block)
 	// isInstruction ensures that only instructions can be assigned to the
 	// instruction.Instruction interface.
 	isInstruction()
+	Hash() string
 }
