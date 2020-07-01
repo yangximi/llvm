@@ -10,5 +10,5 @@ require (
 	github.com/mewmew/float v0.0.0-20191226120903-16bbe2fdd85e
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 	github.com/pkg/errors v0.9.1
-	golang.org/x/tools v0.0.0-20200604183345-4d5ea46c79fe
+	golang.org/x/tools v0.0.0-20200701151220-7cb253f4c4f8
 )

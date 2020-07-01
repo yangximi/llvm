@@ -22,6 +22,7 @@ func _() {
 	_ = x[enum.DISPFlagElemental-64]
 	_ = x[enum.DISPFlagRecursive-128]
 	_ = x[enum.DISPFlagMainSubprogram-256]
+	_ = x[enum.DISPFlagDeleted-512]
 	_ = x[enum.DISPFlagNonvirtual-0]
 	_ = x[enum.DISPFlagVirtuality-3]
 }
@@ -34,6 +35,7 @@ const (
 	_DISPFlag_name_4 = "DISPFlagElemental"
 	_DISPFlag_name_5 = "DISPFlagRecursive"
 	_DISPFlag_name_6 = "DISPFlagMainSubprogram"
+	_DISPFlag_name_7 = "DISPFlagDeleted"
 )
 
 var (
@@ -67,6 +69,9 @@ func DISPFlagFromString(s string) enum.DISPFlag {
 	}
 	if s == _DISPFlag_name_6 {
 		return enum.DISPFlag(256)
+	}
+	if s == _DISPFlag_name_7 {
+		return enum.DISPFlag(512)
 	}
 	panic(fmt.Errorf("unable to locate DISPFlag enum corresponding to %q", s))
 }

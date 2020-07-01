@@ -14,16 +14,17 @@ import (
 
 func main() {
 
-	directory := "/home/sqy5331/project/AST-transformer/data/C/testcases"
+	directory := "/home/ys/project/C/testcases"
 	files, err := GetAllFiles(directory)
 	if err != nil {
 		panic(err)
 	}
 	for _, file := range files {
-		mod,err:=asm.ParseFile(file)
+		mod, err := asm.ParseFile(file)
 		fmt.Println(file)
-		if err!= nil{
-			panic(err)
+		if err != nil {
+			fmt.Println(err)
+			continue
 		}
 		mapping := asm.NewASTMapping()
 		mapping.FuncCompare(mod, file)

@@ -203,6 +203,7 @@ const (
 	DISPFlagElemental      DISPFlag = 1 << 6
 	DISPFlagRecursive      DISPFlag = 1 << 7
 	DISPFlagMainSubprogram DISPFlag = 1 << 8
+	DISPFlagDeleted        DISPFlag = 1 << 9
 
 	// Virtuality and non-virtuality.
 	DISPFlagNonvirtual DISPFlag = DISPFlagZero
