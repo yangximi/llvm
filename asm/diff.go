@@ -381,12 +381,12 @@ func (m *ASTMapping) FuncCompare(mod *ir.Module, CFilePth string) []operation {
 			if dice != float64(1) && dice > 0.5 {
 				fmt.Println(bad_f.GlobalIdent.Name())
 				fmt.Println(good_f.GlobalIdent.Name())
-				// fmt.Println(Container_mapping)
+				fmt.Println(container_mapping)
 
-				func_script, contents := generateFuncDiff(bad_f, good_f, m, container_mapping)
-				// Debug print edit scripts
-				fmt.Println(contents)
-				fmt.Println(func_script)
+				// func_script, contents := generateFuncDiff(bad_f, good_f, m, container_mapping)
+				// // Debug print edit scripts
+				// fmt.Println(contents)
+				// fmt.Println(func_script)
 				generateSamples(mod, CFilePth, bad_f, good_f, i, j)
 			}
 		}

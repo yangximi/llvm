@@ -14,25 +14,28 @@ import (
 
 func main() {
 
-	directory := "/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/"
+	directory := "/home/sqy5331/project/AST-transformer/data/C/testcases"
 	files, err := GetAllFiles(directory)
 	if err != nil {
 		panic(err)
 	}
 	for _, file := range files {
+		mod,err:=asm.ParseFile(file)
 		fmt.Println(file)
-		mod, _ := asm.ParseFile(file)
+		if err!= nil{
+			panic(err)
+		}
 		mapping := asm.NewASTMapping()
 		mapping.FuncCompare(mod, file)
 	}
 
 	//Testcase
 	// filePath := "/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/s01/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll"
-	// src, _ := asm.ParseFile("/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/s01/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
-	// dst, _ := asm.ParseFile("/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/s01/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
+	// src, _ := asm.ParseFile("/home/sqy5331/project/llvm/main/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
+	// dst, _ := asm.ParseFile("/home/sqy5331/project/llvm/main/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
 	// mapping := asm.NewASTMapping()
 	// mapping.FuncCompare(src, filePath)
-	// script := mapping.AstCompare(src, tgt)
+	// script := mapping.AstCompare(src, dst)
 	// fmt.Println(script)
 }
 
