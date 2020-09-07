@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
@@ -89,10 +90,24 @@ func (inst *InstICmp) LLString() string {
 func (inst *InstICmp) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "icmp %s %s %s %s", inst.Type(), inst.Pred, inst.X.Type(), inst.Y.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstICmp) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := PreTosignal(inst.Y.Ident(), inst.Pred.String(), prefix)
+
+	// pred_id := Add_quotation_marks(inst.Pred.String(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "icmp_op1"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "icmp_op2"})
+
 }
 
 // ~~~ [ fcmp ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,10 +196,25 @@ func (inst *InstFCmp) Hash() string {
 	for _, flag := range inst.FastMathFlags {
 		fmt.Fprintf(buf, " %s", flag)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstFCmp) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	pred_id := Add_quotation_marks(inst.Pred.String(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, pred_id, nil)
+
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "fcmp_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "fcmp_y"})
+	graph.AddEdge(pred_id, dst_id, true, map[string]string{"label": "pred"})
+
 }
 
 // ~~~ [ phi ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -274,10 +304,12 @@ func (inst *InstPhi) Hash() string {
 	for _, inc := range inst.Incs {
 		buf.WriteString(inc.String())
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstPhi) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	//TODO:
 }
 
 // ___ [ Incoming value ] ______________________________________________________
@@ -382,10 +414,12 @@ func (inst *InstSelect) Hash() string {
 	for _, flag := range inst.FastMathFlags {
 		fmt.Fprintf(buf, " %s", flag)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstSelect) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	//TODO:
 }
 
 // ~~~ [ freeze ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -454,10 +488,11 @@ func (inst *InstFreeze) LLString() string {
 func (inst *InstFreeze) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "freeze %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFreeze) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	//TODO:
 }
 
 // ~~~ [ call ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -523,6 +558,16 @@ func (inst *InstCall) GetParent() *Block {
 }
 func (inst *InstCall) SetParent(b *Block) {
 	inst.Parent = b
+}
+
+func (inst *InstCall) GetGlobalFunc() *Func {
+	m := inst.Parent.Parent.Parent
+	for _, f := range m.Funcs {
+		if inst.Callee.Ident() == f.Ident() {
+			return f
+		}
+	}
+	return nil
 }
 
 //func (inst *) equal(other *i) {return false}
@@ -593,9 +638,18 @@ func (inst *InstCall) LLString() string {
 	}
 	return buf.String()
 }
-func (inst *InstCall) Hash() string { //Fixme
+func (inst *InstCall) Hash() string { //Fixme 只保留当前指令改变系统状态的field
 	buf := &strings.Builder{}
-	fmt.Fprintf(buf, "call %s %s", inst.Type(), inst.Callee.Ident())
+	fmt.Fprintf(buf, "call %s", inst.Type())
+	//check if callee is declaration:
+	if f := inst.GetGlobalFunc(); f != nil {
+		if len(f.Blocks) != 0 { // not declaration
+			fmt.Fprintf(buf, "%s", f.LLString())
+		}
+	} else {
+		fmt.Fprintf(buf, "%s", inst.Callee.Ident())
+	}
+
 	if inst.Tail != enum.TailNone {
 		fmt.Fprintf(buf, "%s ", inst.Tail)
 	}
@@ -614,10 +668,16 @@ func (inst *InstCall) Hash() string { //Fixme
 		fmt.Fprintf(buf, " %s", inst.AddrSpace)
 	}
 	// Use function signature instead of return type for variadic functions.
-	// for _, arg := range inst.Args {
-	// 	// fmt.Println(arg.String())
-	// 	buf.WriteString(arg.String())
-	// }
+
+	for i, arg := range inst.Args {
+		if i != 0 {
+			buf.WriteString(", ")
+		}
+		if !strings.HasPrefix(arg.Ident(), "%") {
+			buf.WriteString(arg.String())
+		}
+	}
+
 	for _, attr := range inst.FuncAttrs {
 		fmt.Fprintf(buf, " %s", attr)
 	}
@@ -629,7 +689,70 @@ func (inst *InstCall) Hash() string { //Fixme
 	// for _, md := range inst.Metadata {
 	// 	fmt.Fprintf(buf, ", %s", md)
 	// }
+
 	return buf.String()
+}
+
+func (inst *InstCall) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
+	if !strings.HasPrefix(inst.Callee.Ident(), "@llvm.dbg.declare") { //ignore @llvm.dbg.declare
+		cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+		if !inst.Type().Equal(types.Void) { //返回值非空
+			callee := Add_quotation_marks(inst.Callee.Ident(), prefix)
+			dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+			graph.AddNode(cluster_f, callee, nil)
+			graph.AddNode(cluster_f, dst_id, nil)
+			graph.AddEdge(callee, dst_id, true, map[string]string{"label": "call_Callee"})
+
+			//Step2. For call args
+			args := &strings.Builder{}
+			for i, arg := range inst.Args {
+				if i != 0 {
+					args.WriteString(", ")
+				}
+				if !strings.HasPrefix(arg.Ident(), "%") {
+
+					args.WriteString(arg.String())
+				} else { //point to previous system state
+					pre_id := Add_quotation_marks(arg.Ident(), prefix)
+					graph.AddEdge(pre_id, dst_id, true, map[string]string{"label": "call_Args"})
+				}
+			}
+			if args.String() != "" { //非空
+				args_id := Add_quotation_marks(args.String(), prefix)
+				graph.AddNode(cluster_f, args_id, map[string]string{"shape": "diamond"})
+				graph.AddEdge(args_id, dst_id, true, map[string]string{"label": "call_Args"})
+			}
+		} else { //返回值为空
+
+			callee_void := Add_quotation_marks("void::"+inst.Callee.Ident(), prefix)
+
+			graph.AddNode(cluster_f, callee_void, nil)
+			graph.AddEdge(callee_void, callee_void, true, map[string]string{"label": "call_Callee"})
+			args := &strings.Builder{}
+			for i, arg := range inst.Args {
+				if i != 0 {
+					args.WriteString(", ")
+				}
+				if !strings.HasPrefix(arg.Ident(), "%") {
+
+					args.WriteString(arg.String())
+				} else { //point to previous system state
+					pre_id := Add_quotation_marks(arg.Ident(), prefix)
+					graph.AddEdge(pre_id, callee_void, true, map[string]string{"label": "call_Args"})
+				}
+			}
+			if args.String() != "" { //非空
+				args_id := Add_quotation_marks(args.String(), prefix)
+				graph.AddNode(cluster_f, args_id, map[string]string{"shape": "diamond"})
+				graph.AddEdge(args_id, callee_void, true, map[string]string{"label": "call_Args"})
+			}
+		}
+
+	}
+
 }
 
 // Sig returns the function signature of the callee.
@@ -705,10 +828,17 @@ func (inst *InstVAArg) LLString() string {
 func (inst *InstVAArg) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "va_arg %s, %s, %s", inst.Type(), inst.ArgList.Type(), inst.ArgType)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstVAArg) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	argList_id := inst.ArgList.Ident()
+	graph.AddNode(cluster_f, argList_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(argList_id, dst_id, true, map[string]string{"label": "va_arg"})
 }
 
 // ~~~ [ landingpad ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -784,10 +914,12 @@ func (inst *InstLandingPad) Hash() string {
 	for _, clause := range inst.Clauses {
 		fmt.Fprintf(buf, "%s", clause)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstLandingPad) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ___ [ Landingpad clause ] ___________________________________________________
@@ -886,10 +1018,11 @@ func (inst *InstCatchPad) Hash() string {
 		buf.WriteString(arg.String())
 	}
 
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
 	return buf.String()
+}
+
+func (inst *InstCatchPad) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ cleanuppad ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -966,8 +1099,34 @@ func (inst *InstCleanupPad) Hash() string {
 	for _, arg := range inst.Args {
 		buf.WriteString(arg.String())
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstCleanupPad) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
+}
+func PreTosignal(Y, pred, prefix string) string {
+	switch pred {
+	case "eq":
+		return Add_quotation_marks("=="+Y, prefix)
+	case "ne":
+		return Add_quotation_marks("!="+Y, prefix)
+	case "ugt":
+		return Add_quotation_marks(">"+Y, prefix)
+	case "uge":
+		return Add_quotation_marks(">="+Y, prefix)
+	case "ult":
+		return Add_quotation_marks("<"+Y, prefix)
+	case "ule":
+		return Add_quotation_marks("<="+Y, prefix)
+	case "sgt":
+		return Add_quotation_marks(">"+Y, prefix)
+	case "sge":
+		return Add_quotation_marks(">="+Y, prefix)
+	case "slt":
+		return Add_quotation_marks("<"+Y, prefix)
+	case "sle":
+		return Add_quotation_marks("<="+Y, prefix)
+	}
+	return ""
 }

@@ -1,0 +1,33 @@
+? 9
+[MOV] 0:ir.Block; label %0|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstStore ir.InstLoad ;ir.InstStore ir.InstStore ir.InstLoad |LocalIdent:{ 1};ElemType:i8*;NElems:<nil>;Typ:i8**;InAlloca:false;SwiftError:false;Align:align 8;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i8** %1 metadata !107 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !108];
+[MOV] 3:ir.InstStore; ;|Src:i8* null;Dst:i8** %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !109];
+[MOV] 4:ir.InstStore; ;|Src:i8* bitcast ([43 x i32]* @.str to i8*);Dst:i8** %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !110];
+[MOV] 5:ir.InstLoad; ir.InstLoad ;ir.InstStore |LocalIdent:{ 2};ElemType:i8*;Src:i8** %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !111];
+[MOV] 6:ir.InstStore; ;|Src:i8* %2;Dst:i8** @CWE121_Stack_Based_Buffer_Overflow__CWE135_45_goodB2GData;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !112];
+[MOV] 7:ir.InstCall; ;|LocalIdent:{ 0};Callee:void ()* @goodB2GSink;Args:[];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !113];
+[MOV] 8:ir.TermRet; |X:<nil>;Metadata:[!dbg !114];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstCall
+1:ir.InstAlloca,3,2:ir.InstCall
+0:ir.Block,4,3:ir.InstStore
+2:ir.InstCall,3,3:ir.InstStore
+0:ir.Block,4,4:ir.InstStore
+3:ir.InstStore,3,4:ir.InstStore
+0:ir.Block,4,5:ir.InstLoad
+4:ir.InstStore,3,5:ir.InstLoad
+0:ir.Block,4,6:ir.InstStore
+5:ir.InstLoad,3,6:ir.InstStore
+0:ir.Block,4,7:ir.InstCall
+6:ir.InstStore,3,7:ir.InstCall
+7:ir.InstCall,3,8:ir.TermRet
+5:ir.InstLoad,1,6:ir.InstStore
+6:ir.InstStore,2,5:ir.InstLoad
+1:ir.InstAlloca,1,3:ir.InstStore
+3:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,4:ir.InstStore
+4:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,5:ir.InstLoad
+5:ir.InstLoad,2,1:ir.InstAlloca

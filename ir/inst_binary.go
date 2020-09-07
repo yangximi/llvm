@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
@@ -83,10 +84,20 @@ func (inst *InstAdd) LLString() string {
 func (inst *InstAdd) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "add %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstAdd) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "add_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "add_y"})
 }
 
 // ~~~ [ fadd ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,10 +172,20 @@ func (inst *InstFAdd) LLString() string {
 func (inst *InstFAdd) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fadd %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFAdd) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "add_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "add_y"})
 }
 
 // ~~~ [ sub ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -239,10 +260,20 @@ func (inst *InstSub) LLString() string {
 func (inst *InstSub) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "sub %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstSub) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "sub_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "sub_y"})
 }
 
 // ~~~ [ fsub ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -317,10 +348,20 @@ func (inst *InstFSub) LLString() string {
 func (inst *InstFSub) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fsub %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFSub) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "fsub_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "fsub_y"})
 }
 
 // ~~~ [ mul ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -395,10 +436,20 @@ func (inst *InstMul) LLString() string {
 func (inst *InstMul) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "mul %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstMul) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "mul_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "mul_y"})
 }
 
 // ~~~ [ fmul ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -473,10 +524,20 @@ func (inst *InstFMul) LLString() string {
 func (inst *InstFMul) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fmul %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFMul) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "fmul_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "fmul_y"})
 }
 
 // ~~~ [ udiv ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -551,10 +612,20 @@ func (inst *InstUDiv) LLString() string {
 func (inst *InstUDiv) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "udiv %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstUDiv) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "udiv_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "udiv_y"})
 }
 
 // ~~~ [ sdiv ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -629,10 +700,20 @@ func (inst *InstSDiv) LLString() string {
 func (inst *InstSDiv) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "sdiv %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstSDiv) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "sdiv_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "sdiv_y"})
 }
 
 // ~~~ [ fdiv ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -707,10 +788,20 @@ func (inst *InstFDiv) LLString() string {
 func (inst *InstFDiv) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fdiv %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFDiv) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "fdiv_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "fdiv_y"})
 }
 
 // ~~~ [ urem ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -779,10 +870,20 @@ func (inst *InstURem) LLString() string {
 func (inst *InstURem) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "urem %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstURem) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "urem_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "urem_y"})
 }
 
 // ~~~ [ srem ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -851,10 +952,20 @@ func (inst *InstSRem) LLString() string {
 func (inst *InstSRem) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "srem %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstSRem) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "srem_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "srem_y"})
 }
 
 // ~~~ [ frem ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -929,8 +1040,18 @@ func (inst *InstFRem) LLString() string {
 func (inst *InstFRem) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "frem %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFRem) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "frem_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "frem_y"})
 }

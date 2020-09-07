@@ -3,14 +3,15 @@ package asm
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
 	"sort"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir"
+	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/metadata"
 )
 
@@ -18,6 +19,7 @@ type Mapping struct {
 	src    *ir.Block
 	dst    *ir.Block
 	dice   float64
+	n_dice float64
 	common int
 }
 
@@ -29,19 +31,30 @@ func (m Mappings) Len() int {
 }
 
 //Less():
-func (m Mappings) Less(i, j int) bool {
+func (m Mappings) Less(i, j int) bool { //逆序排列，dice值从高到低
 	if m[i].common != m[j].common {
 		return m[i].common > m[j].common
 	} else if m[i].dice != m[j].dice {
 		return m[i].dice > m[j].dice
+	} else if m[i].n_dice != m[j].n_dice {
+		return m[i].n_dice > m[j].n_dice
 	} else { //靠前匹配，先匹配label总和更小的：%12:%12 > %12:%42
-		return m[i].src.LocalID+m[i].dst.LocalID > m[j].src.LocalID+m[j].dst.LocalID
+		return m[i].src.LocalID+m[i].dst.LocalID < m[j].src.LocalID+m[j].dst.LocalID
 	}
 }
 
 //Swap()
 func (m Mappings) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
+}
+
+func (m Mappings) String() string {
+	buf := &strings.Builder{}
+	for _, k := range m {
+		s := fmt.Sprintf("[%s:%s]:(%f) ", k.src.String(), k.dst.String(), k.dice)
+		buf.WriteString(s)
+	}
+	return buf.String()
 }
 
 func commonNumber(src_block, dst_block *ir.Block, m *ASTMapping) int {
@@ -77,7 +90,9 @@ func commonNumber(src_block, dst_block *ir.Block, m *ASTMapping) int {
 	return common
 }
 
-func (k *Mapping) diceSimilarity(src, dst *ir.Block, m *ASTMapping) float64 {
+func (k *Mapping) diceSimilarity(m *ASTMapping) float64 {
+	src := k.src
+	dst := k.dst
 	common := commonNumber(src, dst, m)
 	src_term := src.Term
 	dst_term := dst.Term
@@ -103,11 +118,48 @@ func (k *Mapping) diceSimilarity(src, dst *ir.Block, m *ASTMapping) float64 {
 	}
 }
 
+func (k *Mapping) ndiceSimilarity(src_cfg, dst_cfg *ControlFlowGraph, m *ASTMapping) float64 {
+	src := k.src
+	dst := k.dst
+	src_preds := src_cfg.pred[src]
+	dst_preds := dst_cfg.pred[dst]
+	pred_dices := float64(0)
+	for _, src_pred := range src_preds {
+		max := float64(0)
+		for _, dst_pred := range dst_preds {
+			tmp := Mapping{src_pred, dst_pred, 0, 0, 0}
+			dice := tmp.diceSimilarity(m)
+			if dice > max {
+				max = dice
+			}
+		}
+		pred_dices = pred_dices + max
+	}
+	src_sucss := src_cfg.successor[src]
+	dst_sucss := dst_cfg.successor[dst]
+	suc_dices := float64(0)
+	for _, src_suc := range src_sucss {
+		max := float64(0)
+		for _, dst_suc := range dst_sucss {
+			tmp := Mapping{src_suc, dst_suc, 0, 0, 0}
+			dice := tmp.diceSimilarity(m)
+			if dice > max {
+				max = dice
+			}
+		}
+		suc_dices = suc_dices + max
+	}
+	k.n_dice = pred_dices + suc_dices
+	return k.n_dice
+}
+
 func FuncDiceSimilarity(src, dst *ir.Func, m *ASTMapping) (float64, map[*ir.Block]*ir.Block) {
 	srcIgnored := make(map[*ir.Block]bool)
 	dstIgnored := make(map[*ir.Block]bool)
 	var ambiguousList Mappings
-	Container_mapping := make(map[*ir.Block]*ir.Block) //map[src]dst is better
+	Container_mapping := make(map[*ir.Block]*ir.Block) // map[src]dst is better
+	src_cfg := createCFG(src)
+	dst_cfg := createCFG(dst)
 
 	//计算src和dst的指令数
 	srcNumInst := 0
@@ -125,25 +177,29 @@ func FuncDiceSimilarity(src, dst *ir.Func, m *ASTMapping) (float64, map[*ir.Bloc
 		dstNumInst += 1
 	}
 
-	//模糊匹配
+	// src 和 dst 中的block两两比较相似度
 	for _, src_block := range src.Blocks {
 		for _, dst_block := range dst.Blocks {
-			ambiguousList = append(ambiguousList, Mapping{src_block, dst_block, 0, 0})
+			ambiguousList = append(ambiguousList, Mapping{src_block, dst_block, 0, 0, 0})
 		}
 	}
-	for i, k := range ambiguousList {
-		ambiguousList[i].diceSimilarity(k.src, k.dst, m)
+	for i := range ambiguousList {
+		ambiguousList[i].diceSimilarity(m)
+	}
+	for i := range ambiguousList {
+		ambiguousList[i].ndiceSimilarity(src_cfg, dst_cfg, m)
 	}
 	sort.Sort(ambiguousList)
+	//贪婪选取dice值最高的block组合
 	for {
 		if len(ambiguousList) == 0 {
 			break
 		}
 		first := ambiguousList[0]
 		ambiguousList = ambiguousList[1:]
-		if first.dice < 0.2 { //阈值
-			break
-		}
+		// if first.dice < 0.2 { //阈值
+		// 	break
+		// }
 		_, src_ok := srcIgnored[first.src]
 		_, dst_ok := dstIgnored[first.dst]
 		if !(src_ok || dst_ok) {
@@ -284,10 +340,10 @@ func (m *ASTMapping) AstCompare(src, dst *ir.Module) []operation {
 	//对于inst，可能存在多个候选的mapping，需要filter
 	m.filterMapping()
 	var scripts []operation
-	for dst, src := range m.Container_mapping {
-		script, _ := generateBlockDiff(src, dst, m, m.Container_mapping)
-		scripts = append(scripts, script...)
-	}
+	// for dst, src := range m.Container_mapping {
+	// 	script, _ := generateBlockDiff(src, dst, m, m.Container_mapping)
+	// 	scripts = append(scripts, script...)
+	// }
 	return scripts
 }
 
@@ -309,7 +365,7 @@ func (m *ASTMapping) filterMapping() {
 			src_insts := m.dstToSrcs[dst_inst]
 			for _, _src_inst := range src_insts {
 				for _, _dst_inst := range dst_insts {
-					ambiguousList = append(ambiguousList, Mapping{(*_src_inst).GetParent(), (*_dst_inst).GetParent(), 0, 0})
+					ambiguousList = append(ambiguousList, Mapping{(*_src_inst).GetParent(), (*_dst_inst).GetParent(), 0, 0, 0})
 				}
 			}
 			for _, src_inst := range src_insts {
@@ -318,8 +374,8 @@ func (m *ASTMapping) filterMapping() {
 		}
 	}
 	//Rank
-	for i, k := range ambiguousList {
-		ambiguousList[i].diceSimilarity(k.src, k.dst, m)
+	for i := range ambiguousList {
+		ambiguousList[i].diceSimilarity(m)
 	}
 	sort.Sort(ambiguousList) //降序排列
 	//Recovery block ambiguous mapping
@@ -364,12 +420,13 @@ func (m *ASTMapping) FuncCompare(mod *ir.Module, CFilePth string) []operation {
 	//Step 1 找出good 和bad func
 
 	for _, f := range mod.Funcs { //Fixme f可能是值复制
-
-		if ok := strings.Contains(f.GlobalIdent.Name(), "good"); ok {
-			goodFuncsTable = append(goodFuncsTable, f)
-		}
-		if ok := strings.Contains(f.GlobalIdent.Name(), "bad"); ok {
-			badFuncsTable = append(badFuncsTable, f)
+		if f.Linkage != enum.LinkageLinkOnceODR {
+			if ok := strings.Contains(f.GlobalIdent.Name(), "good"); ok {
+				goodFuncsTable = append(goodFuncsTable, f)
+			}
+			if ok := strings.Contains(f.GlobalIdent.Name(), "bad"); ok {
+				badFuncsTable = append(badFuncsTable, f)
+			}
 		}
 	}
 
@@ -378,16 +435,25 @@ func (m *ASTMapping) FuncCompare(mod *ir.Module, CFilePth string) []operation {
 	for i, bad_f := range badFuncsTable {
 		for j, good_f := range goodFuncsTable {
 			dice, container_mapping := FuncDiceSimilarity(bad_f, good_f, m)
-			if dice != float64(1) && dice > 0.5 {
+			if dice != float64(1) && dice > 0.7 {
+				fmt.Println(dice)
 				fmt.Println(bad_f.GlobalIdent.Name())
 				fmt.Println(good_f.GlobalIdent.Name())
 				fmt.Println(container_mapping)
 
-				// func_script, contents := generateFuncDiff(bad_f, good_f, m, container_mapping)
-				// // Debug print edit scripts
-				// fmt.Println(contents)
-				// fmt.Println(func_script)
-				generateSamples(mod, CFilePth, bad_f, good_f, i, j)
+				// //generate bad graph sample and good graph sample
+				bad_g := NewGraph()
+				bad_g.Func2Graph(bad_f, m.src_dfs[bad_f]) //need update tag becasue it's bad sample, need to be changed.
+				good_g := NewGraph()
+				good_g.Func2Graph(good_f, m.dst_dfs[good_f]) //dont need update tag because it's good sample
+
+				script, content, graph_diff := generateFuncDiff(bad_f, good_f, m, container_mapping, bad_g)
+				// fmt.Println(graph_diff.String())
+				fmt.Println(content)
+				fmt.Println(script)
+				// fmt.Println(i, j)
+				generateSamples(mod, CFilePth, bad_f, good_f, i, j, bad_g, good_g, graph_diff)
+
 			}
 		}
 	}
@@ -395,60 +461,77 @@ func (m *ASTMapping) FuncCompare(mod *ir.Module, CFilePth string) []operation {
 	return nil
 }
 
-func generateSamples(mod *ir.Module, CFilePth string, bad_f, good_f *ir.Func, i, j int) {
+func generateSamples(mod *ir.Module, CFilePth string, bad_f, good_f *ir.Func, i, j int, bad_g, good_g *Graph, graph_diff *gographviz.Graph) {
 	//Step 0 setup filepath config
 	filenameBase := mod.SourceFilename
 	var fileSuffix string
 	fileSuffix = path.Ext(filenameBase)
 	var filenameOnly string
 	filenameOnly = strings.TrimSuffix(filenameBase, fileSuffix)
-	prefix := "data" //root directory
+	// prefix := "data" //root directory
 	CFilePth = strings.TrimSuffix(CFilePth, ".ll") + fileSuffix
 
 	//Step3 打印到文件，生成good sample和bad sample
 
-	badFilename := fmt.Sprintf("%s/%s_%d%d_bad.ll", prefix, filenameOnly, i, j)
-	goodFilename := fmt.Sprintf("%s/%s_%d%d_good.ll", prefix, filenameOnly, i, j)
-	cFilename := fmt.Sprintf("%s/%s_%d%d_cfile%s", prefix, filenameOnly, i, j, fileSuffix)
-
+	// badFilename := fmt.Sprintf("%s/%s_%d%d_bad.ll", prefix, filenameOnly, i, j)
+	// goodFilename := fmt.Sprintf("%s/%s_%d%d_good.ll", prefix, filenameOnly, i, j)
+	// cFilename := fmt.Sprintf("%s/%s_%d%d_cfile%s", prefix, filenameOnly, i, j, fileSuffix)
+	badGraphFile := fmt.Sprintf("%s/%s_%d%d_bad.txt", "data/bad", filenameOnly, i, j)
+	goodGraphFile := fmt.Sprintf("%s/%s_%d%d_good.txt", "data/good", filenameOnly, i, j)
+	diffDotGraphFile := fmt.Sprintf("%s/%s_%d%d_diff.dot", "data/diff", filenameOnly, i, j)
 	//copy cFile from srouce
+	bad_g.PrintToFile(badGraphFile)
+	good_g.PrintToFile(goodGraphFile)
+	WriteToFile(diffDotGraphFile, graph_diff.String())
+	// srcCFile, err := os.Open(CFilePth)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer srcCFile.Close()
+	// dstCFile, err := os.OpenFile(cFilename, os.O_WRONLY|os.O_CREATE, 0644)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer dstCFile.Close()
+	// io.Copy(dstCFile, srcCFile)
 
-	srcCFile, err := os.Open(CFilePth)
+	// //remove and keep funcs
+	// badFuncs := []*ir.Func{bad_f}
+	// goodFuncs := []*ir.Func{good_f}
+	// for _, f := range mod.Funcs {
+	// 	if !(strings.Contains(f.GlobalIdent.Name(), "CWE") || strings.Contains(f.GlobalIdent.Name(), "good") || strings.Contains(f.GlobalIdent.Name(), "bad") || strings.Contains(f.GlobalIdent.Name(), "main")) {
+	// 		badFuncs = append(badFuncs, f)
+	// 		goodFuncs = append(goodFuncs, f)
+	// 	}
+	// }
+	// //DO NOT remove mod.metadata !
+
+	// mod.Funcs = badFuncs
+	// //generate bad sample
+	// badContent := []byte(fmt.Sprintln(mod))
+	// bad_err := ioutil.WriteFile(badFilename, badContent, 0644)
+	// if bad_err != nil {
+	// 	panic(bad_err)
+	// }
+
+	// mod.Funcs = goodFuncs
+	// //generate good sample
+	// goodContent := []byte(fmt.Sprintln(mod))
+	// good_err := ioutil.WriteFile(goodFilename, goodContent, 0644)
+	// if good_err != nil {
+	// 	panic(good_err)
+	// }
+}
+func WriteToFile(filename string, data string) error {
+	file, err := os.Create(filename)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer srcCFile.Close()
-	dstCFile, err := os.OpenFile(cFilename, os.O_WRONLY|os.O_CREATE, 0644)
+	defer file.Close()
+
+	_, err = io.WriteString(file, data)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer dstCFile.Close()
-	io.Copy(dstCFile, srcCFile)
-
-	//remove and keep funcs
-	badFuncs := []*ir.Func{bad_f}
-	goodFuncs := []*ir.Func{good_f}
-	for _, f := range mod.Funcs {
-		if !(strings.Contains(f.GlobalIdent.Name(), "CWE") || strings.Contains(f.GlobalIdent.Name(), "good") || strings.Contains(f.GlobalIdent.Name(), "bad")) {
-			badFuncs = append(badFuncs, f)
-			goodFuncs = append(goodFuncs, f)
-		}
-	}
-	//remove mod.metadata
-	mod.MetadataDefs = nil
-	mod.Funcs = badFuncs
-	//generate bad sample
-	badContent := []byte(fmt.Sprintln(mod))
-	bad_err := ioutil.WriteFile(badFilename, badContent, 0644)
-	if bad_err != nil {
-		panic(bad_err)
-	}
-
-	mod.Funcs = goodFuncs
-	//generate good sample
-	goodContent := []byte(fmt.Sprintln(mod))
-	good_err := ioutil.WriteFile(goodFilename, goodContent, 0644)
-	if good_err != nil {
-		panic(good_err)
-	}
+	return file.Sync()
 }

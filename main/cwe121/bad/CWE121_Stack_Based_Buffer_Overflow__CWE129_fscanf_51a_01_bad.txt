@@ -1,0 +1,35 @@
+? 9
+[MOV] 0:ir.Block; label %0|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstCall ;ir.InstStore ir.InstCall ir.InstLoad |LocalIdent:{ 1};ElemType:i32;NElems:<nil>;Typ:i32*;InAlloca:false;SwiftError:false;Align:align 4;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32* %1 metadata !13 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !15];
+[MOV] 3:ir.InstStore; ;|Src:i32 -1;Dst:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !16];
+[DEL] 4:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 2};ElemType:%struct.__sFILE*;Src:%struct.__sFILE** @__stdinp;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !17];
+[DEL] 5:ir.InstCall; ir.InstCall ;|LocalIdent:{ 3};Callee:i32 (%struct.__sFILE*, i8*, ...)* @fscanf;Args:[%struct.__sFILE* %2 i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i64 0, i64 0) i32* %1];Typ:i32;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !18];
+[MOV] 6:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 4};ElemType:i32;Src:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !19];
+[MOV] 7:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i32)* @CWE121_Stack_Based_Buffer_Overflow__CWE129_fscanf_51b_badSink;Args:[i32 %4];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !20];
+[MOV] 8:ir.TermRet; |X:<nil>;Metadata:[!dbg !21];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstCall
+1:ir.InstAlloca,3,2:ir.InstCall
+0:ir.Block,4,3:ir.InstStore
+2:ir.InstCall,3,3:ir.InstStore
+0:ir.Block,4,4:ir.InstLoad
+3:ir.InstStore,3,4:ir.InstLoad
+0:ir.Block,4,5:ir.InstCall
+4:ir.InstLoad,3,5:ir.InstCall
+0:ir.Block,4,6:ir.InstLoad
+5:ir.InstCall,3,6:ir.InstLoad
+0:ir.Block,4,7:ir.InstCall
+6:ir.InstLoad,3,7:ir.InstCall
+7:ir.InstCall,3,8:ir.TermRet
+1:ir.InstAlloca,1,3:ir.InstStore
+3:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,5:ir.InstCall
+5:ir.InstCall,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,6:ir.InstLoad
+6:ir.InstLoad,2,1:ir.InstAlloca
+4:ir.InstLoad,1,5:ir.InstCall
+5:ir.InstCall,2,4:ir.InstLoad
+6:ir.InstLoad,1,7:ir.InstCall
+7:ir.InstCall,2,6:ir.InstLoad

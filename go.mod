@@ -3,6 +3,7 @@ module github.com/llir/llvm
 go 1.13
 
 require (
+	github.com/awalterschulze/gographviz v2.0.1+incompatible
 	github.com/google/go-cmp v0.3.1
 	github.com/kr/pretty v0.2.0
 	github.com/kr/text v0.2.0 // indirect

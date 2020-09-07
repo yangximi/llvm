@@ -721,3 +721,16 @@ func findBlock(f *ir.Func, blockIdent ir.LocalIdent) (*ir.Block, error) {
 	}
 	return nil, errors.Errorf("unable to locate basic block %q of function %q", blockIdent.Ident(), f.Ident())
 }
+
+func Add_quotation_marks(str, prefix string) string {
+
+	str = strings.Replace(str, "\\", "", -1)
+	str = strings.Replace(str, "\"", "", -1)
+	if strings.HasPrefix(str, "%") {
+		str = "\\" + str
+	}
+	if strings.HasPrefix(str, "@") {
+		str = "\\" + str
+	}
+	return fmt.Sprintf("\"%s:%s\"", prefix, str)
+}

@@ -5,8 +5,10 @@ package ir
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/internal/enc"
 	"github.com/llir/llvm/ir/types"
 )
@@ -78,4 +80,31 @@ func (block *Block) Hash() string {
 	}
 	fmt.Fprintf(buf, "\t%s", block.Term.Hash())
 	return buf.String()
+}
+
+func (block *Block) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(block.Parent.Ident(), "cluster_"+prefix)
+	// sub_b_id := Add_quotation_marks(block.Ident(), "cluster_"+prefix)
+	b_id := Add_quotation_marks(block.Ident(), prefix)
+	pre_id := b_id
+	// graph.AddSubGraph(cluster_f, sub_b_id, map[string]string{"label": b_id})
+	graph.AddNode(cluster_f, b_id, map[string]string{"shape": "box", "style": "filled", "fillcolor": "grey"})
+
+	for i := range block.Insts {
+		inst := &(block.Insts)[i]
+		(*inst).ToDotGraph(graph, prefix)
+		// v := reflect.ValueOf(*inst).Elem().FieldByName("LocalIdent")
+		v := reflect.ValueOf(*inst)
+		m := v.MethodByName("Ident")
+		if m.IsValid() {
+			inst_id := m.Call(nil)[0].String()
+			if inst_id != "%0" {
+				inst_id = Add_quotation_marks(inst_id, prefix)
+				graph.AddEdge(pre_id, inst_id, true, map[string]string{"color": "red"})
+				pre_id = inst_id
+			}
+		}
+
+	}
+	block.Term.ToDotGraph(graph, cluster_f, pre_id, prefix)
 }

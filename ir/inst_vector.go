@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
@@ -84,10 +85,11 @@ func (inst *InstExtractElement) LLString() string {
 func (inst *InstExtractElement) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "extractelement %s,%s, %s", inst.Type(), inst.X.Type(), inst.Index.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstExtractElement) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ insertelement ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -166,10 +168,11 @@ func (inst *InstInsertElement) LLString() string {
 func (inst *InstInsertElement) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "insertelement %s, %s, %s, %s", inst.Type(), inst.X.Type(), inst.Elem.Type(), inst.Index.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstInsertElement) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ shufflevector ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,8 +252,9 @@ func (inst *InstShuffleVector) LLString() string {
 func (inst *InstShuffleVector) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "shufflevector %s, %s, %s, %s", inst.Type(), inst.X.Type(), inst.Y.Type(), inst.Mask.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstShuffleVector) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }

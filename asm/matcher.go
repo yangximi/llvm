@@ -6,42 +6,8 @@ import (
 	"strings"
 
 	"github.com/llir/llvm/ir"
+	"github.com/llir/llvm/ir/types"
 )
-
-func ambCompare(src, dst *ir.Instruction, src_df, dst_df *DataFlow) bool { //For now, only use for search update action
-	if reflect.TypeOf(*src) != reflect.TypeOf(*dst) {
-		return false
-	}
-	if len(src_df.Use[src]) == 0 {
-		switch src_inst := (*src).(type) {
-		case *ir.InstAlloca:
-			dst_inst := (*dst).(*ir.InstAlloca)
-			if !src_inst.ElemType.Equal(dst_inst.ElemType) {
-				return false
-			}
-			if src_inst.Align != dst_inst.Align {
-				return false
-			}
-			//TODO: add check def-use chain
-			dst_df.Index[dst] = true
-			return true
-		default:
-			return false
-		}
-	} else if len(src_df.Use[src]) != len(dst_df.Use[dst]) { //Fixme maybe never reached this branch
-		return false
-	} else {
-		for i, dst_inst := range dst_df.Use[dst] {
-			if !dst_df.Index[dst_inst] || !ambCompare(src_df.Use[src][i], dst_inst, src_df, dst_df) { //false
-				return false
-			}
-			dst_df.Index[dst] = true
-			return true
-		}
-		return false
-	}
-
-}
 
 func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, src_df, dst_df *DataFlow, container_mapping map[*ir.Block]*ir.Block) operation {
 
@@ -56,8 +22,8 @@ func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, sr
 
 			// Case1: Compare *ir.Instrution
 			if src_term.X != nil && dst_term.X != nil {
-				src_defInst, ok1 := src_df.Define[src_term.X.Ident()]
-				dst_defInst, ok2 := dst_df.Define[dst_term.X.Ident()]
+				src_defInst, ok1 := src_df.InstTable[src_term.X.Ident()]
+				dst_defInst, ok2 := dst_df.InstTable[dst_term.X.Ident()]
 				if ok1 && ok2 {
 					if !instCompare(src_defInst, dst_defInst, src_f, dst_f, src_df, dst_df) { //引用的inst相同
 						return UPDATE
@@ -81,9 +47,9 @@ func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, sr
 			dst_term := dst.(*ir.TermCondBr)
 
 			// Case1: Compare *ir.Instrution
-			if src_df.Define[src_term.Cond.Ident()] != nil && dst_df.Define[dst_term.Cond.Ident()] != nil {
-				src_defInst := src_df.Define[src_term.Cond.Ident()]
-				dst_defInst := dst_df.Define[dst_term.Cond.Ident()]
+			if src_df.InstTable[src_term.Cond.Ident()] != nil && dst_df.InstTable[dst_term.Cond.Ident()] != nil {
+				src_defInst := src_df.InstTable[src_term.Cond.Ident()]
+				dst_defInst := dst_df.InstTable[dst_term.Cond.Ident()]
 				if !instCompare(src_defInst, dst_defInst, src_f, dst_f, src_df, dst_df) { //引用的inst相同
 					return UPDATE
 				}
@@ -111,9 +77,9 @@ func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, sr
 			dst_term := dst.(*ir.TermSwitch)
 
 			// Case1: Compare *ir.Instrution
-			if src_df.Define[src_term.X.Ident()] != nil && dst_df.Define[dst_term.X.Ident()] != nil {
-				src_defInst := src_df.Define[src_term.X.Ident()]
-				dst_defIsnt := dst_df.Define[dst_term.X.Ident()]
+			if src_df.InstTable[src_term.X.Ident()] != nil && dst_df.InstTable[dst_term.X.Ident()] != nil {
+				src_defInst := src_df.InstTable[src_term.X.Ident()]
+				dst_defIsnt := dst_df.InstTable[dst_term.X.Ident()]
 				if !instCompare(src_defInst, dst_defIsnt, src_f, dst_f, src_df, dst_df) { //引用的inst相同
 					return UPDATE
 				}
@@ -230,9 +196,9 @@ func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, sr
 			dst_term := dst.(*ir.TermResume)
 
 			// Case1: Compare *ir.Instrution
-			if src_df.Define[src_term.X.Ident()] != nil && dst_df.Define[dst_term.X.Ident()] != nil {
-				src_defInst := src_df.Define[src_term.X.Ident()]
-				dst_defIsnt := dst_df.Define[dst_term.X.Ident()]
+			if src_df.InstTable[src_term.X.Ident()] != nil && dst_df.InstTable[dst_term.X.Ident()] != nil {
+				src_defInst := src_df.InstTable[src_term.X.Ident()]
+				dst_defIsnt := dst_df.InstTable[dst_term.X.Ident()]
 				if !instCompare(src_defInst, dst_defIsnt, src_f, dst_f, src_df, dst_df) { //引用的inst相同
 					return UPDATE
 				}
@@ -312,8 +278,8 @@ func terminatorCompare(src_block, dst_block *ir.Block, src_f, dst_f *ir.Func, sr
 func calculateHash(inst *ir.Instruction, df *DataFlow) string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "%s", (*inst).Hash())
-	if df.DefChain[inst] != nil {
-		for _, use_inst := range df.DefChain[inst] {
+	if df.UseChain[inst] != nil {
+		for _, use_inst := range df.UseChain[inst] {
 			fmt.Fprintf(buf, "%s", calculateHash(use_inst, df))
 		}
 	}
@@ -325,11 +291,11 @@ func instDiceSimilary(src, dst *ir.Instruction, src_df, dst_df *DataFlow) float6
 	dstNumInst := 0
 	// srcIgnored := make(map[*ir.Instruction]bool)
 	// dstIgnored := make(map[*ir.Instruction]bool)
-	if src_df.DefChain[src] != nil {
-		srcNumInst = len(src_df.DefChain[src])
+	if src_df.UseChain[src] != nil {
+		srcNumInst = len(src_df.UseChain[src])
 	}
-	if dst_df.DefChain[dst] != nil {
-		dstNumInst = len(dst_df.DefChain[dst])
+	if dst_df.UseChain[dst] != nil {
+		dstNumInst = len(dst_df.UseChain[dst])
 	}
 	if srcNumInst > 0 && dstNumInst > 0 {
 
@@ -337,12 +303,47 @@ func instDiceSimilary(src, dst *ir.Instruction, src_df, dst_df *DataFlow) float6
 	return float64(common * 2)
 }
 
+func ambCompare(src, dst *ir.Instruction, src_df, dst_df *DataFlow) bool { //For now, only use for search update action
+	if reflect.TypeOf(*src) != reflect.TypeOf(*dst) {
+		return false
+	} else if len(src_df.DefChain[src]) != len(dst_df.DefChain[dst]) { //Fixme maybe never reached this branch
+		return false
+	} else if len(src_df.DefChain[src]) == 0 {
+		switch src_inst := (*src).(type) {
+		case *ir.InstAlloca:
+			dst_inst := (*dst).(*ir.InstAlloca)
+			if !src_inst.ElemType.Equal(dst_inst.ElemType) {
+				return false
+			}
+			if src_inst.Align != dst_inst.Align {
+				return false
+			}
+			//TODO: add check def-use chain
+			dst_df.Index[dst] = true
+			return true
+		default:
+			return false
+		}
+	} else {
+		for i, dst_inst := range dst_df.DefChain[dst] {
+			if !dst_df.Index[dst_inst] || !ambCompare(src_df.DefChain[src][i], dst_inst, src_df, dst_df) { //false
+				return false
+			}
+			dst_df.Index[dst] = true
+			return true
+		}
+		return false
+	}
+
+}
+
 func instCompare(src, dst *ir.Instruction, src_f, dst_f *ir.Func, src_df, dst_df *DataFlow) bool {
 	if reflect.TypeOf(*src) != reflect.TypeOf(*dst) {
 		return false
-	} else if len(src_df.Use[src]) != len(dst_df.Use[dst]) { //Fixme maybe never reached this branch
+	} else if len(src_df.DefChain[src]) != len(dst_df.DefChain[dst]) { //Fixme maybe never reached this branch
 		return false
-	} else if len(dst_df.Use[dst]) == 0 { //没有引用变量的指令比较
+	} else if len(dst_df.DefChain[dst]) == 0 { //没有引用变量的指令比较
+
 		if src_value, ok := (*src).(*ir.InstAlloca); ok { //单独处理变量申请的inst指令比较，根据debug信息中的变量名是否一致来比较
 			dst_value := (*dst).(*ir.InstAlloca)
 			ssaSrcValue := fmt.Sprintf("%s:%s", src_f, src_value.String())
@@ -350,8 +351,24 @@ func instCompare(src, dst *ir.Instruction, src_f, dst_f *ir.Func, src_df, dst_df
 			if src_df.VariableTable[ssaSrcValue] == dst_df.VariableTable[ssaDstValue] {
 				dst_df.Index[dst] = true
 				return true
+			} else if src_value.GetTypeDefs() != nil && dst_value.GetTypeDefs() != nil { //自定义变量类型
+				if types.IsPointer(src_value.ElemType) && types.IsPointer(dst_value.ElemType) {
+					if (src_value.ElemType).(*types.PointerType).ElemType.LLString() == (dst_value.ElemType).(*types.PointerType).ElemType.LLString() {
+						dst_df.Index[dst] = true
+						return true
+					}
+				} else if src_value.ElemType.LLString() == dst_value.ElemType.LLString() {
+					dst_df.Index[dst] = true
+					return true
+				}
 			}
 			return false
+		}
+		if src_value, ok := (*src).(*ir.InstCall); ok && strings.Contains(src_value.Callee.Ident(), "@llvm.dbg.declare") {
+			dst_value := (*dst).(*ir.InstCall)
+			if src_value.Callee == dst_value.Callee { //ignore two @llvm.dbg.declare call compare, return ture
+				return true
+			}
 		}
 		if (*src).Hash() == (*dst).Hash() {
 			dst_df.Index[dst] = true
@@ -359,13 +376,19 @@ func instCompare(src, dst *ir.Instruction, src_f, dst_f *ir.Func, src_df, dst_df
 		}
 		return false
 	} else { //len(src_df.Use[src]) == len(dst_df.Use[dst]) >0 引用变量的指令比较
-		//Fixme 这两个指令本身还没有比较
-		for i, dst_inst := range dst_df.Use[dst] {
+
+		//Step1. 检查当前指令所处的系统状态(跟该指令有数据流关系)是否相同
+		for i, dst_inst := range dst_df.DefChain[dst] {
 			//递归前溯 变量定义是否相同
-			if !dst_df.Index[dst_inst] || !instCompare(src_df.Use[src][i], dst_inst, src_f, dst_f, src_df, dst_df) { //false
+			if !dst_df.Index[dst_inst] || !instCompare(src_df.DefChain[src][i], dst_inst, src_f, dst_f, src_df, dst_df) { //false
+				// if !dst_df.Index[dst_inst] || !ambCompare(src_df.DefChain[src][i], dst_inst, src_df, dst_df) { //false
 				return false
 			}
-			// fmt.Println((*dst).LLString(), (*src).LLString(), *dst_inst, *src_df.Use[src][i])
+
+		}
+		//Step2. 检查两个指令改变的系统状态量是否相同
+		// fmt.Println("Src:"+(*dst).LLString(), "Dst:"+(*src).LLString())
+		if (*src).Hash() == (*dst).Hash() {
 			dst_df.Index[dst] = true
 			return true
 		}

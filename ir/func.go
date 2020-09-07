@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/internal/enc"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
@@ -175,6 +176,15 @@ func (f *Func) Hash() string {
 		}
 		fmt.Fprintf(buf, " %s", bodyHash(f))
 		return buf.String()
+	}
+}
+
+func (f *Func) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	f_name := Add_quotation_marks(f.Ident(), prefix)
+	clusterf_id := Add_quotation_marks(f.Ident(), "cluster_"+prefix)
+	graph.AddSubGraph("Diff", clusterf_id, map[string]string{"label": f_name, "fillcolor": "grey", "style": "filled"})
+	for _, b := range f.Blocks {
+		b.ToDotGraph(graph, prefix)
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
@@ -37,6 +38,7 @@ type Terminator interface {
 	// Succs returns the successor basic blocks of the terminator.
 	Succs() []*Block
 	Hash() string
+	ToDotGraph(*gographviz.Graph, string, string, string)
 }
 
 // --- [ ret ] -----------------------------------------------------------------
@@ -95,10 +97,20 @@ func (term *TermRet) Hash() string {
 	} else {
 		fmt.Fprintf(buf, "ret %s", term.X)
 	}
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermRet) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	// if term.X == nil {
+	// 	x_id := Add_quotation_marks("void", prefix)
+	// 	graph.AddNode(cluster_f, x_id, map[string]string{"shape": "doublecircle"})
+	// 	graph.AddEdge(x_id, x_id, true, map[string]string{"label": "ret"})
+	// } else {
+	// 	x_id := Add_quotation_marks(term.X.Ident(), prefix)
+	// 	graph.AddNode(cluster_f, x_id, map[string]string{"shape": "doublecircle"})
+	// 	graph.AddEdge(x_id, x_id, true, map[string]string{"label": "ret"})
+	// }
 }
 
 // --- [ br ] ------------------------------------------------------------------
@@ -148,10 +160,16 @@ func (term *TermBr) LLString() string {
 func (term *TermBr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "br %s", term.Target)
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermBr) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
+	//cluster_f := term.Parent.Ident()
+	target_id := Add_quotation_marks(term.Target.Ident(), prefix)
+	// graph.AddNode(cluster_f, "br", nil)
+	graph.AddEdge(pre_id, target_id, true, map[string]string{"label": "br"})
+
 }
 
 // --- [ conditional br ] ------------------------------------------------------
@@ -204,10 +222,18 @@ func (term *TermCondBr) LLString() string {
 func (term *TermCondBr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "br %s, %s, %s", term.Cond, term.TargetTrue, term.TargetFalse)
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermCondBr) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	cond_id := Add_quotation_marks(term.Cond.Ident(), prefix)
+	target_true := Add_quotation_marks(term.TargetTrue.Ident(), prefix)
+	target_false := Add_quotation_marks(term.TargetFalse.Ident(), prefix)
+	graph.AddNode(cluster_f, cond_id, nil)
+	graph.AddEdge(cond_id, target_true, true, map[string]string{"label": "br"})
+	graph.AddEdge(cond_id, target_false, true, map[string]string{"label": "br"})
+
 }
 
 // --- [ switch ] --------------------------------------------------------------
@@ -273,10 +299,22 @@ func (term *TermSwitch) Hash() string {
 		fmt.Fprintf(buf, "\t\t%s\n", c)
 	}
 	buf.WriteString("\t]")
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (term *TermSwitch) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	x_id := Add_quotation_marks(term.X.Ident(), prefix)
+	target_default := Add_quotation_marks(term.TargetDefault.Ident(), prefix)
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddEdge(x_id, target_default, true, map[string]string{"label": "switch"})
+	for _, c := range term.Cases {
+		target_id := Add_quotation_marks(c.Target.Ident(), prefix)
+		cx_id := Add_quotation_marks(c.X.Ident(), prefix)
+		graph.AddEdge(x_id, target_id, true, map[string]string{"label": "switch"})
+		graph.AddEdge(cx_id, target_id, true, map[string]string{"label": "case"})
+	}
 }
 
 // ~~~ [ Switch case ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -372,10 +410,11 @@ func (term *TermIndirectBr) Hash() string {
 		buf.WriteString(target.String())
 	}
 	buf.WriteString("]")
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermIndirectBr) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
 }
 
 // --- [ invoke ] --------------------------------------------------------------
@@ -544,10 +583,17 @@ func (term *TermInvoke) Hash() string {
 
 	}
 	fmt.Fprintf(buf, "\n\t\tto %s unwind %s", term.NormalRetTarget, term.ExceptionRetTarget)
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermInvoke) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	src_id := Add_quotation_marks(term.Ident(), prefix)
+	dst_id := Add_quotation_marks(term.Invokee.Ident(), prefix)
+	graph.AddNode(cluster_f, src_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(src_id, dst_id, true, map[string]string{"label": "invoke"})
+
 }
 
 // Sig returns the function signature of the invokee.
@@ -744,10 +790,17 @@ func (term *TermCallBr) Hash() string {
 	for _, otherRetTarget := range term.OtherRetTargets {
 		buf.WriteString(otherRetTarget.String())
 	}
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermCallBr) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	src_id := Add_quotation_marks(term.Ident(), prefix)
+	dst_id := Add_quotation_marks(term.Callee.Ident(), prefix)
+	graph.AddNode(cluster_f, src_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(src_id, dst_id, true, map[string]string{"label": "callbr"})
+
 }
 
 // Sig returns the function signature of the callee.
@@ -804,10 +857,11 @@ func (term *TermResume) LLString() string {
 func (term *TermResume) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "resume %s", term.X)
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermResume) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
 }
 
 // --- [ catchswitch ] ---------------------------------------------------------
@@ -914,10 +968,11 @@ func (term *TermCatchSwitch) Hash() string {
 	if term.DefaultUnwindTarget != nil {
 		buf.WriteString(term.DefaultUnwindTarget.String())
 	}
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermCatchSwitch) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
 }
 
 // --- [ catchret ] ------------------------------------------------------------
@@ -969,10 +1024,11 @@ func (term *TermCatchRet) LLString() string {
 func (term *TermCatchRet) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, " %s", term.Target)
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermCatchRet) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
 }
 
 // --- [ cleanupret ] ----------------------------------------------------------
@@ -1047,10 +1103,11 @@ func (term *TermCleanupRet) Hash() string {
 	if term.UnwindTarget != nil {
 		buf.WriteString(term.UnwindTarget.String())
 	}
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (term *TermCleanupRet) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+
 }
 
 // --- [ unreachable ] ---------------------------------------------------------
@@ -1090,8 +1147,11 @@ func (term *TermUnreachable) LLString() string {
 func (term *TermUnreachable) Hash() string {
 	buf := &strings.Builder{}
 	buf.WriteString("unreachable")
-	for _, md := range term.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (term *TermUnreachable) ToDotGraph(graph *gographviz.Graph, cluster_f, pre_id, prefix string) {
+	//cluster_f := term.Parent.Ident()
+	graph.AddNode(cluster_f, "unreachable", map[string]string{"shape": "doubalecircle"})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
@@ -97,10 +98,21 @@ func (inst *InstTrunc) LLString() string {
 func (inst *InstTrunc) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "trunc %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+
+func (inst *InstTrunc) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	// to_id := Add_quotation_marks(inst.To.String(),prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "trunc_from"})
+	// graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "trunc_to"})
 }
 
 // ~~~ [ zext ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -163,10 +175,20 @@ func (inst *InstZExt) LLString() string {
 func (inst *InstZExt) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "zext %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstZExt) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	// to_id := Add_quotation_marks(inst.To.String(),prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "zext_from"})
+	// graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "zext_to"})
 }
 
 // ~~~ [ sext ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -229,10 +251,20 @@ func (inst *InstSExt) LLString() string {
 func (inst *InstSExt) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "sext %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstSExt) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	// to_id := Add_quotation_marks(inst.To.String(),prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "sext_from"})
+	// graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "sext_to"})
 }
 
 // ~~~ [ fptrunc ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -295,10 +327,20 @@ func (inst *InstFPTrunc) LLString() string {
 func (inst *InstFPTrunc) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fptrunc %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFPTrunc) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	// to_id := Add_quotation_marks(inst.To.String(),prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "fptrunc_from"})
+	// graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "fptrunc_to"})
 }
 
 // ~~~ [ fpext ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -361,10 +403,20 @@ func (inst *InstFPExt) LLString() string {
 func (inst *InstFPExt) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fpext %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFPExt) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "fpext_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "fpext_to"})
 }
 
 // ~~~ [ fptoui ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -427,10 +479,20 @@ func (inst *InstFPToUI) LLString() string {
 func (inst *InstFPToUI) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fptoui %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFPToUI) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "fptoui_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "fptoui_to"})
 }
 
 // ~~~ [ fptosi ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -493,10 +555,20 @@ func (inst *InstFPToSI) LLString() string {
 func (inst *InstFPToSI) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "fptosi %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFPToSI) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "fptosi_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "fptosi_to"})
 }
 
 // ~~~ [ uitofp ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -559,10 +631,20 @@ func (inst *InstUIToFP) LLString() string {
 func (inst *InstUIToFP) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "uitofp %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstUIToFP) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "uitofp_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "uitofp_to"})
 }
 
 // ~~~ [ sitofp ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -625,10 +707,20 @@ func (inst *InstSIToFP) LLString() string {
 func (inst *InstSIToFP) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "sitofp %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstSIToFP) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "sitofp_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "sitofo_to"})
 }
 
 // ~~~ [ ptrtoint ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -691,10 +783,20 @@ func (inst *InstPtrToInt) LLString() string {
 func (inst *InstPtrToInt) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "ptrtoint %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstPtrToInt) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "ptrtoint_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "ptrtoint_to"})
 }
 
 // ~~~ [ inttoptr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -757,10 +859,20 @@ func (inst *InstIntToPtr) LLString() string {
 func (inst *InstIntToPtr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "inttoptr %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstIntToPtr) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "inttoptr_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "inttoptr_to"})
 }
 
 // ~~~ [ bitcast ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -823,10 +935,22 @@ func (inst *InstBitCast) LLString() string {
 func (inst *InstBitCast) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "bitcast %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstBitCast) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	// to_id := Add_quotation_marks(inst.To.String(), prefix)
+	to_id := inst.To.String()
+	label_id := "\"" + fmt.Sprintf("bitcast_to_%s", to_id) + "\""
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": label_id})
+	// graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "bitcast"})
 }
 
 // ~~~ [ addrspacecast ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -889,8 +1013,18 @@ func (inst *InstAddrSpaceCast) LLString() string {
 func (inst *InstAddrSpaceCast) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "addrspacecast %s to %s", inst.From.Type(), inst.To)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstAddrSpaceCast) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	from_id := Add_quotation_marks(inst.From.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	to_id := Add_quotation_marks(inst.To.String(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+
+	graph.AddNode(cluster_f, from_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, to_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(from_id, dst_id, true, map[string]string{"label": "addrspacecast_from"})
+	graph.AddEdge(to_id, dst_id, true, map[string]string{"label": "addrspacecast_to"})
 }

@@ -1,0 +1,30 @@
+? 8
+[MOV] 0:ir.Block; label %1|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstLoad ir.InstCall ;ir.InstStore ir.InstLoad |LocalIdent:{ 2};ElemType:i32*;NElems:<nil>;Typ:i32**;InAlloca:false;SwiftError:false;Align:align 8;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstStore; ;|Src:i32* %0;Dst:i32** %2;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[];
+[MOV] 3:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32** %2 metadata !219 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !220];
+[DEL] 4:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 3};ElemType:%struct.__sFILE*;Src:%struct.__sFILE** @__stdinp;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !221];
+[MOV] 5:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 4};ElemType:i32*;Src:i32** %2;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !222];
+[DEL] 6:ir.InstCall; ir.InstCall ;|LocalIdent:{ 5};Callee:i32 (%struct.__sFILE*, i8*, ...)* @fscanf;Args:[%struct.__sFILE* %3 i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i64 0, i64 0) i32* %4];Typ:i32;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !223];
+[MOV] 7:ir.TermRet; |X:<nil>;Metadata:[!dbg !224];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstStore
+1:ir.InstAlloca,3,2:ir.InstStore
+0:ir.Block,4,3:ir.InstCall
+2:ir.InstStore,3,3:ir.InstCall
+0:ir.Block,4,4:ir.InstLoad
+3:ir.InstCall,3,4:ir.InstLoad
+0:ir.Block,4,5:ir.InstLoad
+4:ir.InstLoad,3,5:ir.InstLoad
+0:ir.Block,4,6:ir.InstCall
+5:ir.InstLoad,3,6:ir.InstCall
+6:ir.InstCall,3,7:ir.TermRet
+4:ir.InstLoad,1,6:ir.InstCall
+6:ir.InstCall,2,4:ir.InstLoad
+5:ir.InstLoad,1,6:ir.InstCall
+6:ir.InstCall,2,5:ir.InstLoad
+1:ir.InstAlloca,1,2:ir.InstStore
+2:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,5:ir.InstLoad
+5:ir.InstLoad,2,1:ir.InstAlloca

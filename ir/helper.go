@@ -460,3 +460,16 @@ func (fw *fmtWriter) Fprintln(a ...interface{}) (n int, err error) {
 	fw.err = err
 	return n, err
 }
+
+func Add_quotation_marks(str, prefix string) string {
+
+	str = strings.Replace(str, "\\", "", -1)
+	str = strings.Replace(str, "\"", "", -1)
+	if strings.HasPrefix(str, "%") {
+		str = "\\" + str
+	}
+	if strings.HasPrefix(str, "@") {
+		str = "\\" + str
+	}
+	return fmt.Sprintf("\"%s:%s\"", prefix, str)
+}

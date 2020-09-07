@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/internal/gep"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
@@ -64,6 +65,13 @@ func (inst *InstAlloca) SetParent(b *Block) {
 	inst.Parent = b
 }
 
+func (inst *InstAlloca) GetTypeDefs() types.Type {
+	if strings.HasPrefix(inst.ElemType.String(), "%") {
+		return inst.ElemType
+	}
+	return nil
+}
+
 //func (inst *) equal(other *i) {return false}
 
 // Type returns the type of the instruction.
@@ -104,19 +112,30 @@ func (inst *InstAlloca) LLString() string {
 	}
 	return buf.String()
 }
+
 func (inst *InstAlloca) Hash() string {
 	buf := &strings.Builder{}
-	fmt.Fprintf(buf, "alloca %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, "%s", md)
+
+	fmt.Fprintf(buf, "alloca %s", inst.ElemType.LLString())
+	if inst.NElems != nil {
+		fmt.Fprintf(buf, ", %s", inst.NElems)
 	}
 	if inst.Align != 0 {
-		fmt.Fprintf(buf, "%s", inst.Align)
+		fmt.Fprintf(buf, ", %s", inst.Align)
 	}
 	if inst.AddrSpace != 0 {
 		fmt.Fprintf(buf, ", %s", inst.AddrSpace)
 	}
 	return buf.String()
+}
+
+func (inst *InstAlloca) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	src_id := Add_quotation_marks(inst.ElemType.String(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddNode(cluster_f, src_id, map[string]string{"shape": "diamond"})
+	graph.AddEdge(src_id, dst_id, true, map[string]string{"label": "alloca"})
 }
 
 // ~~~ [ load ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,6 +191,15 @@ func (inst *InstLoad) GetParent() *Block {
 func (inst *InstLoad) SetParent(b *Block) {
 	inst.Parent = b
 }
+func (inst *InstLoad) GetGlobal() *Global {
+	m := inst.Parent.Parent.Parent
+	for _, g := range m.Globals {
+		if g.Ident() == inst.Src.Ident() {
+			return g
+		}
+	}
+	return nil
+}
 
 //func (inst *) equal(other *i) {return false}
 
@@ -216,18 +244,48 @@ func (inst *InstLoad) LLString() string {
 }
 func (inst *InstLoad) Hash() string {
 	buf := &strings.Builder{}
-	fmt.Fprintf(buf, "alloca %s %s", inst.Type(), inst.Src.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, "%s", md)
+	fmt.Fprintf(buf, "%s", inst.ElemType)
+	if strings.HasPrefix(inst.Src.Ident(), "@") { //全局量
+		g := inst.GetGlobal()
+		if g != nil {
+			fmt.Fprintf(buf, "%s", g.Hash())
+		}
+	} else { //局部变量
+		fmt.Fprintf(buf, "%s", inst.Src)
 	}
+
 	if len(inst.SyncScope) > 0 {
 		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
 	}
+
+	if inst.Ordering != enum.AtomicOrderingNone {
+		fmt.Fprintf(buf, " %s", inst.Ordering)
+	}
+
 	if inst.Align != 0 {
 		fmt.Fprintf(buf, "%s", inst.Align)
 	}
 
 	return buf.String()
+}
+
+func (inst *InstLoad) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	src_id := Add_quotation_marks(inst.Src.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	if strings.HasPrefix(inst.Src.Ident(), "@") { //自定义量
+		graph.AddNode(cluster_f, src_id, map[string]string{"shape": "diamond"})
+		if g := inst.GetGlobal(); g != nil {
+			g_id := Add_quotation_marks(g.LLString(), prefix)
+			graph.AddNode(cluster_f, g_id, map[string]string{"shape": "box"})
+			graph.AddEdge(src_id, g_id, true, map[string]string{"label": "global_definition"})
+		}
+
+	} else {
+		graph.AddNode(cluster_f, src_id, nil)
+	}
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(dst_id, src_id, true, map[string]string{"label": "load_from"})
 }
 
 // ~~~ [ store ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -277,6 +335,15 @@ func (inst *InstStore) GetParent() *Block {
 func (inst *InstStore) SetParent(b *Block) {
 	inst.Parent = b
 }
+func (inst *InstStore) GetGlobal() *Global {
+	m := inst.Parent.Parent.Parent
+	for _, g := range m.Globals {
+		if g.Ident() == inst.Src.String() {
+			return g
+		}
+	}
+	return nil
+}
 
 //func (inst *) equal(other *i) {return false}
 
@@ -315,7 +382,15 @@ func (inst *InstStore) LLString() string {
 }
 func (inst *InstStore) Hash() string {
 	buf := &strings.Builder{}
-	fmt.Fprintf(buf, "store %s, %s", inst.Src.Type(), inst.Dst.Type())
+	if strings.HasPrefix(inst.Src.String(), "@") { //全局量
+		g := inst.GetGlobal()
+		if g != nil {
+			fmt.Fprintf(buf, "%s", g.Hash())
+		}
+	} else { //局部变量
+		fmt.Fprintf(buf, "%s", inst.Src.Type())
+	}
+	fmt.Fprintf(buf, "store %s", inst.Dst.Type())
 	if inst.Atomic {
 		buf.WriteString(" atomic")
 	}
@@ -331,10 +406,20 @@ func (inst *InstStore) Hash() string {
 	if inst.Align != 0 {
 		fmt.Fprintf(buf, ", %s", inst.Align)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
 	return buf.String()
+}
+
+func (inst *InstStore) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	src_id := Add_quotation_marks(inst.Src.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Dst.Ident(), prefix)
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	if strings.HasPrefix(src_id, "@") {
+		graph.AddNode(cluster_f, src_id, map[string]string{"shape": "diamond"})
+	} else {
+		graph.AddNode(cluster_f, src_id, nil)
+	}
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(src_id, dst_id, true, map[string]string{"label": "store_to"})
 }
 
 // ~~~ [ fence ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,10 +475,11 @@ func (inst *InstFence) Hash() string {
 		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
 	}
 	fmt.Fprintf(buf, " %s", inst.Ordering)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFence) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ cmpxchg ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -505,10 +591,11 @@ func (inst *InstCmpXchg) Hash() string {
 	}
 	fmt.Fprintf(buf, " %s", inst.SuccessOrdering)
 	fmt.Fprintf(buf, " %s", inst.FailureOrdering)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstCmpXchg) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ atomicrmw ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -608,10 +695,11 @@ func (inst *InstAtomicRMW) Hash() string {
 		fmt.Fprintf(buf, " syncscope(%s)", quote(inst.SyncScope))
 	}
 	fmt.Fprintf(buf, " %s", inst.Ordering)
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstAtomicRMW) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }
 
 // ~~~ [ getelementptr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -700,10 +788,29 @@ func (inst *InstGetElementPtr) Hash() string {
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %s", index.Type())
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstGetElementPtr) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	src_id := Add_quotation_marks(inst.Src.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	indice := &strings.Builder{}
+	for _, index := range inst.Indices {
+		fmt.Fprintf(indice, "_%s", index.Ident())
+	}
+	if strings.HasPrefix(src_id, "@") {
+		graph.AddNode(cluster_f, src_id, map[string]string{"shape": "diamond"})
+	} else {
+		graph.AddNode(cluster_f, src_id, nil)
+	}
+
+	label_id := "\"getelementptr" + indice.String() + "\""
+
+	graph.AddNode(cluster_f, dst_id, nil)
+	// graph.AddNode(cluster_f, indice_id, map[string]string{"shape": "box"})
+	graph.AddEdge(src_id, dst_id, true, map[string]string{"label": label_id})
+	// graph.AddEdge(indice_id, dst_id, true, map[string]string{"label": "offset"})
 }
 
 // ### [ Helper functions ] ####################################################

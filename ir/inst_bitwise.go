@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
@@ -83,10 +84,20 @@ func (inst *InstShl) LLString() string {
 func (inst *InstShl) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "shl %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstShl) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "shl_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "shl_y"})
 }
 
 // ~~~ [ lshr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,10 +172,20 @@ func (inst *InstLShr) LLString() string {
 func (inst *InstLShr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "lshr %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstLShr) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "lshl_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "lshl_y"})
 }
 
 // ~~~ [ ashr ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -239,10 +260,20 @@ func (inst *InstAShr) LLString() string {
 func (inst *InstAShr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "ashr %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstAShr) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "ashr_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "ashr_y"})
 }
 
 // ~~~ [ and ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -311,10 +342,20 @@ func (inst *InstAnd) LLString() string {
 func (inst *InstAnd) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "and %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstAnd) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "and_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "and_y"})
 }
 
 // ~~~ [ or ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -383,10 +424,20 @@ func (inst *InstOr) LLString() string {
 func (inst *InstOr) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "or %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstOr) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "or_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "or_y"})
 }
 
 // ~~~ [ xor ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -455,8 +506,18 @@ func (inst *InstXor) LLString() string {
 func (inst *InstXor) Hash() string {
 	buf := &strings.Builder{}
 	fmt.Fprintf(buf, "xor %s", inst.Type())
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstXor) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	y_id := Add_quotation_marks(inst.Y.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, y_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "xor_x"})
+	graph.AddEdge(y_id, dst_id, true, map[string]string{"label": "xor_y"})
 }

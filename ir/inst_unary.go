@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
@@ -86,8 +87,9 @@ func (inst *InstFNeg) Hash() string {
 	for _, flag := range inst.FastMathFlags {
 		fmt.Fprintf(buf, " %s", flag)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstFNeg) ToDotGraph(graph *gographviz.Graph, prefix string) {
+
 }

@@ -1,0 +1,314 @@
+digraph "\@CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_01_bad" {
+	"i32"->"\%1"[ label=alloca ];
+	"i32"->"\%2"[ label=alloca ];
+	"\%struct.sockaddr_in"->"\%3"[ label=alloca ];
+	"i32"->"\%4"[ label=alloca ];
+	"[14 x i8]"->"\%5"[ label=alloca ];
+	"i32"->"\%6"[ label=alloca ];
+	"[10 x i32]"->"\%7"[ label=alloca ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"-1"->"\%1"[ label=store ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"-1"->"\%4"[ label=store ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"\@socket"->"\%9"[ label=call ];
+	"\%9"->"\%4"[ label=store ];
+	"\%4"->"\%10"[ label=load ];
+	"\%10"->"\%11"[ label=icmp_x ];
+	"-1"->"\%11"[ label=icmp_y ];
+	"eq"->"\%11"[ label=pred ];
+	"\%3"->"\%14"[ label=bitcast_from ];
+	"i8*"->"\%14"[ label=bitcast_to ];
+	"\@llvm.memset.p0i8.i64"->"\%0"[ label=call ];
+	"\%3"->"\%15"[ label=getelementptr ];
+	", i32 0, i32 1"->"\%15"[ label=offset ];
+	"2"->"\%15"[ label=store ];
+	"\@inet_addr"->"\%16"[ label=call ];
+	"\%3"->"\%17"[ label=getelementptr ];
+	", i32 0, i32 3"->"\%17"[ label=offset ];
+	"\%17"->"\%18"[ label=getelementptr ];
+	", i32 0, i32 0"->"\%18"[ label=offset ];
+	"\%16"->"\%18"[ label=store ];
+	"\%3"->"\%19"[ label=getelementptr ];
+	", i32 0, i32 2"->"\%19"[ label=offset ];
+	"-30871"->"\%19"[ label=store ];
+	"\%4"->"\%20"[ label=load ];
+	"\%3"->"\%21"[ label=bitcast_from ];
+	"\%struct.sockaddr*"->"\%21"[ label=bitcast_to ];
+	"\@01_connect"->"\%22"[ label=call ];
+	"\%22"->"\%23"[ label=icmp_x ];
+	"-1"->"\%23"[ label=icmp_y ];
+	"eq"->"\%23"[ label=pred ];
+	"\%4"->"\%26"[ label=load ];
+	"\%5"->"\%27"[ label=getelementptr ];
+	", i64 0, i64 0"->"\%27"[ label=offset ];
+	"\@01_recv"->"\%28"[ label=call ];
+	"\%28"->"\%29"[ label=trunc_from ];
+	"i32"->"\%29"[ label=trunc_to ];
+	"\%29"->"\%2"[ label=store ];
+	"\%2"->"\%30"[ label=load ];
+	"\%30"->"\%31"[ label=icmp_x ];
+	"-1"->"\%31"[ label=icmp_y ];
+	"eq"->"\%31"[ label=pred ];
+	"\%2"->"\%33"[ label=load ];
+	"\%33"->"\%34"[ label=icmp_x ];
+	"0"->"\%34"[ label=icmp_y ];
+	"eq"->"\%34"[ label=pred ];
+	"\%2"->"\%37"[ label=load ];
+	"\%37"->"\%38"[ label=sext_from ];
+	"i64"->"\%38"[ label=sext_to ];
+	"\%5"->"\%39"[ label=getelementptr ];
+	", i64 0, i64 %38"->"\%39"[ label=offset ];
+	"0"->"\%39"[ label=store ];
+	"\%5"->"\%40"[ label=getelementptr ];
+	", i64 0, i64 0"->"\%40"[ label=offset ];
+	"\@atoi"->"\%41"[ label=call ];
+	"\%41"->"\%1"[ label=store ];
+	"\%4"->"\%43"[ label=load ];
+	"\%43"->"\%44"[ label=icmp_x ];
+	"-1"->"\%44"[ label=icmp_y ];
+	"ne"->"\%44"[ label=pred ];
+	"\%4"->"\%46"[ label=load ];
+	"\@01_close"->"\%47"[ label=call ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"\@llvm.dbg.declare"->"\%0"[ label=call ];
+	"\%7"->"\%49"[ label=bitcast_from ];
+	"i8*"->"\%49"[ label=bitcast_to ];
+	"\@llvm.memset.p0i8.i64"->"\%0"[ label=call ];
+	"\%1"->"\%50"[ label=load ];
+	"\%50"->"\%51"[ label=icmp_x ];
+	"0"->"\%51"[ label=icmp_y ];
+	"sge"->"\%51"[ label=pred ];
+	"\%1"->"\%53"[ label=load ];
+	"\%53"->"\%54"[ label=sext_from ];
+	"i64"->"\%54"[ label=sext_to ];
+	"\%7"->"\%55"[ label=getelementptr ];
+	", i64 0, i64 %54"->"\%55"[ label=offset ];
+	"1"->"\%55"[ label=store ];
+	"0"->"\%6"[ label=store ];
+	"\%6"->"\%57"[ label=load ];
+	"\%57"->"\%58"[ label=icmp_x ];
+	"10"->"\%58"[ label=icmp_y ];
+	"slt"->"\%58"[ label=pred ];
+	"\%6"->"\%60"[ label=load ];
+	"\%60"->"\%61"[ label=sext_from ];
+	"i64"->"\%61"[ label=sext_to ];
+	"\%7"->"\%62"[ label=getelementptr ];
+	", i64 0, i64 %61"->"\%62"[ label=offset ];
+	"\%62"->"\%63"[ label=load ];
+	"\@printIntLine"->"\%0"[ label=call ];
+	"\%6"->"\%65"[ label=load ];
+	"\%65"->"\%66"[ label=add_x ];
+	"1"->"\%66"[ label=add_y ];
+	"\%66"->"\%6"[ label=store ];
+	"\@printLine"->"\%0"[ label=call ];
+	subgraph "cluster_%0" {
+	"-1";
+	"[10 x i32]" [ shape=diamond ];
+	"[14 x i8]" [ shape=diamond ];
+	"\%0";
+	"\%1";
+	"\%2";
+	"\%3";
+	"\%4";
+	"\%5";
+	"\%6";
+	"\%7";
+	"\%struct.sockaddr_in" [ shape=diamond ];
+	"\@llvm.dbg.declare";
+	"i32" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%12" {
+
+}
+;
+	subgraph "cluster_%13" {
+	", i32 0, i32 0" [ shape=box ];
+	", i32 0, i32 1" [ shape=box ];
+	", i32 0, i32 2" [ shape=box ];
+	", i32 0, i32 3" [ shape=box ];
+	"-1";
+	"-30871";
+	"2";
+	"\%0";
+	"\%14";
+	"\%15";
+	"\%16";
+	"\%17";
+	"\%18";
+	"\%19";
+	"\%20";
+	"\%21";
+	"\%22";
+	"\%23";
+	"\%3";
+	"\%4";
+	"\%struct.sockaddr*" [ shape=diamond ];
+	"\@01_connect";
+	"\@inet_addr";
+	"\@llvm.memset.p0i8.i64";
+	"eq";
+	"i8*" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%24" {
+
+}
+;
+	subgraph "cluster_%25" {
+	", i64 0, i64 0" [ shape=box ];
+	"-1";
+	"\%2";
+	"\%26";
+	"\%27";
+	"\%28";
+	"\%29";
+	"\%30";
+	"\%31";
+	"\%4";
+	"\%5";
+	"\@01_recv";
+	"eq";
+	"i32" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%32" {
+	"0";
+	"\%2";
+	"\%33";
+	"\%34";
+	"eq";
+
+}
+;
+	subgraph "cluster_%35" {
+
+}
+;
+	subgraph "cluster_%36" {
+	", i64 0, i64 %38" [ shape=box ];
+	", i64 0, i64 0" [ shape=box ];
+	"0";
+	"\%1";
+	"\%2";
+	"\%37";
+	"\%38";
+	"\%39";
+	"\%40";
+	"\%41";
+	"\%5";
+	"\@atoi";
+	"i64" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%42" {
+	"-1";
+	"\%4";
+	"\%43";
+	"\%44";
+	"ne";
+
+}
+;
+	subgraph "cluster_%45" {
+	"\%4";
+	"\%46";
+	"\%47";
+	"\@01_close";
+
+}
+;
+	subgraph "cluster_%48" {
+	"0";
+	"\%0";
+	"\%1";
+	"\%49";
+	"\%50";
+	"\%51";
+	"\%7";
+	"\@llvm.dbg.declare";
+	"\@llvm.memset.p0i8.i64";
+	"i8*" [ shape=diamond ];
+	"sge";
+
+}
+;
+	subgraph "cluster_%52" {
+	", i64 0, i64 %54" [ shape=box ];
+	"0";
+	"1";
+	"\%1";
+	"\%53";
+	"\%54";
+	"\%55";
+	"\%6";
+	"\%7";
+	"i64" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%56" {
+	"10";
+	"\%57";
+	"\%58";
+	"\%6";
+	"slt";
+
+}
+;
+	subgraph "cluster_%59" {
+	", i64 0, i64 %61" [ shape=box ];
+	"\%0";
+	"\%6";
+	"\%60";
+	"\%61";
+	"\%62";
+	"\%63";
+	"\%7";
+	"\@printIntLine";
+	"i64" [ shape=diamond ];
+
+}
+;
+	subgraph "cluster_%64" {
+	"1";
+	"\%6";
+	"\%65";
+	"\%66";
+
+}
+;
+	subgraph "cluster_%67" {
+
+}
+;
+	subgraph "cluster_%68" {
+	"\%0";
+	"\@printLine";
+
+}
+;
+	subgraph "cluster_%69" {
+
+}
+;
+	subgraph "cluster_%8" {
+	"-1";
+	"\%10";
+	"\%11";
+	"\%4";
+	"\%9";
+	"\@socket";
+	"eq";
+
+}
+;
+
+}

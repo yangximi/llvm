@@ -1,0 +1,27 @@
+? 7
+[MOV] 0:ir.Block; label %1|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstStore ;ir.InstStore ir.InstStore ir.InstLoad |LocalIdent:{ 2};ElemType:i32;NElems:<nil>;Typ:i32*;InAlloca:false;SwiftError:false;Align:align 4;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstStore; ;|Src:i32 %0;Dst:i32* %2;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[];
+[MOV] 3:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32* %2 metadata !180 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !181];
+[MOV] 4:ir.InstStore; ;|Src:i32 7;Dst:i32* %2;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !182];
+[MOV] 5:ir.InstLoad; ir.InstLoad ;|LocalIdent:{ 3};ElemType:i32;Src:i32* %2;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !183];
+[MOV] 6:ir.TermRet; ir.InstLoad|X:i32 %3;Metadata:[!dbg !184];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstStore
+1:ir.InstAlloca,3,2:ir.InstStore
+0:ir.Block,4,3:ir.InstCall
+2:ir.InstStore,3,3:ir.InstCall
+0:ir.Block,4,4:ir.InstStore
+3:ir.InstCall,3,4:ir.InstStore
+0:ir.Block,4,5:ir.InstLoad
+4:ir.InstStore,3,5:ir.InstLoad
+5:ir.InstLoad,3,6:ir.TermRet
+1:ir.InstAlloca,1,2:ir.InstStore
+2:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,4:ir.InstStore
+4:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,5:ir.InstLoad
+5:ir.InstLoad,2,1:ir.InstAlloca
+6:ir.TermRet,2,5:ir.InstLoad
+5:ir.InstLoad,1,6:ir.TermRet

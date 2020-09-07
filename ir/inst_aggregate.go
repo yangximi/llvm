@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
@@ -85,10 +86,23 @@ func (inst *InstExtractValue) Hash() string {
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %d", index)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstExtractValue) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	indice := &strings.Builder{}
+	for _, index := range inst.Indices {
+		fmt.Fprintf(indice, ", %d", index)
+	}
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+	indice_id := Add_quotation_marks(indice.String(), prefix)
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, indice_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "extractvalue"})
+	graph.AddEdge(indice_id, dst_id, true, map[string]string{"label": "indice"})
 }
 
 // ~~~ [ insertvalue ] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,10 +186,17 @@ func (inst *InstInsertValue) Hash() string {
 	for _, index := range inst.Indices {
 		fmt.Fprintf(buf, ", %d", index)
 	}
-	for _, md := range inst.Metadata {
-		fmt.Fprintf(buf, ", %s", md)
-	}
+
 	return buf.String()
+}
+func (inst *InstInsertValue) ToDotGraph(graph *gographviz.Graph, prefix string) {
+	cluster_f := Add_quotation_marks(inst.Parent.Parent.Ident(), "cluster_"+prefix)
+	x_id := Add_quotation_marks(inst.X.Ident(), prefix)
+	dst_id := Add_quotation_marks(inst.Ident(), prefix)
+
+	graph.AddNode(cluster_f, x_id, nil)
+	graph.AddNode(cluster_f, dst_id, nil)
+	graph.AddEdge(x_id, dst_id, true, map[string]string{"label": "shl_x"})
 }
 
 // ### [ Helper functions ] ####################################################

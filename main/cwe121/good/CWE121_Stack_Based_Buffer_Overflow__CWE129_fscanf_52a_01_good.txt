@@ -1,0 +1,30 @@
+? 8
+[MOV] 0:ir.Block; label %0|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstStore ;ir.InstStore ir.InstStore ir.InstLoad |LocalIdent:{ 1};ElemType:i32;NElems:<nil>;Typ:i32*;InAlloca:false;SwiftError:false;Align:align 4;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32* %1 metadata !47 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !48];
+[MOV] 3:ir.InstStore; ;|Src:i32 -1;Dst:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !49];
+[MOV] 4:ir.InstStore; ;|Src:i32 7;Dst:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !50];
+[MOV] 5:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 2};ElemType:i32;Src:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !51];
+[MOV] 6:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i32)* @CWE121_Stack_Based_Buffer_Overflow__CWE129_fscanf_52b_goodG2BSink;Args:[i32 %2];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !52];
+[MOV] 7:ir.TermRet; |X:<nil>;Metadata:[!dbg !53];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstCall
+1:ir.InstAlloca,3,2:ir.InstCall
+0:ir.Block,4,3:ir.InstStore
+2:ir.InstCall,3,3:ir.InstStore
+0:ir.Block,4,4:ir.InstStore
+3:ir.InstStore,3,4:ir.InstStore
+0:ir.Block,4,5:ir.InstLoad
+4:ir.InstStore,3,5:ir.InstLoad
+0:ir.Block,4,6:ir.InstCall
+5:ir.InstLoad,3,6:ir.InstCall
+6:ir.InstCall,3,7:ir.TermRet
+1:ir.InstAlloca,1,3:ir.InstStore
+3:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,4:ir.InstStore
+4:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,5:ir.InstLoad
+5:ir.InstLoad,2,1:ir.InstAlloca
+5:ir.InstLoad,1,6:ir.InstCall
+6:ir.InstCall,2,5:ir.InstLoad

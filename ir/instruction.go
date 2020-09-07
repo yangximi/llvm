@@ -1,5 +1,7 @@
 package ir
 
+import "github.com/awalterschulze/gographviz"
+
 // === [ Instructions ] ========================================================
 
 // Instruction is an LLVM IR instruction. All instructions (except store and
@@ -109,4 +111,5 @@ type Instruction interface {
 	// instruction.Instruction interface.
 	isInstruction()
 	Hash() string
+	ToDotGraph(*gographviz.Graph, string)
 }

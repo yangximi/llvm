@@ -1,0 +1,289 @@
+? 73
+[MOV] 0:ir.Block; label %0|
+[MOV] 1:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstStore ir.InstCall ;ir.InstStore ir.InstStore ir.InstLoad ir.InstLoad |LocalIdent:{ 1};ElemType:i32;NElems:<nil>;Typ:i32*;InAlloca:false;SwiftError:false;Align:align 4;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 2:ir.InstAlloca; ir.InstAlloca ir.InstBitCast ir.InstCall ir.InstGetElementPtr ir.InstCall ir.InstGetElementPtr ir.InstCall ;ir.InstBitCast ir.InstGetElementPtr ir.InstGetElementPtr |LocalIdent:{ 2};ElemType:[14 x i8];NElems:<nil>;Typ:[14 x i8]*;InAlloca:false;SwiftError:false;Align:align 1;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 3:ir.InstAlloca; ir.InstAlloca ir.InstStore ir.InstStore ir.InstAdd ;ir.InstStore ir.InstLoad ir.InstLoad ir.InstLoad ir.InstStore |LocalIdent:{ 3};ElemType:i32;NElems:<nil>;Typ:i32*;InAlloca:false;SwiftError:false;Align:align 4;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 4:ir.InstAlloca; ir.InstAlloca ir.InstBitCast ir.InstCall ir.InstGetElementPtr ir.InstStore ir.InstGetElementPtr ;ir.InstBitCast ir.InstGetElementPtr ir.InstGetElementPtr |LocalIdent:{ 4};ElemType:[10 x i32];NElems:<nil>;Typ:[10 x i32]*;InAlloca:false;SwiftError:false;Align:align 16;AddrSpace:addrspace(0);Metadata:[];
+[MOV] 5:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32* %1 metadata !18 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !19];
+[MOV] 6:ir.InstStore; ;|Src:i32 -1;Dst:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !20];
+[MOV] 7:ir.InstLoad; ir.InstLoad ;ir.InstICmp |LocalIdent:{ 5};ElemType:i32;Src:i32* @staticFive;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !21];
+[MOV] 8:ir.InstICmp; ir.InstICmp ;|LocalIdent:{ 6};Pred:eq;X:i32 %5;Y:i32 5;Typ:i1;Metadata:[!dbg !23];
+[MOV] 9:ir.TermCondBr; ir.InstICmp|Cond:i1 %6;TargetTrue:label %7;TargetFalse:label %18;Successors:[label %7 label %18];Metadata:[!dbg !24];
+[MOV] 10:ir.Block; label %7|
+[MOV] 11:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata [14 x i8]* %2 metadata !25 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !32];
+[MOV] 12:ir.InstBitCast; ir.InstBitCast ir.InstCall ;ir.InstCall |LocalIdent:{ 8};From:[14 x i8]* %2;To:i8*;Metadata:[!dbg !32];
+[MOV] 13:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i8*, i8, i64, i1)* @llvm.memset.p0i8.i64;Args:[i8* align 1 %8 i8 0 i64 14 i1 false];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !32];
+[MOV] 14:ir.InstGetElementPtr; ir.InstGetElementPtr ir.InstCall ;ir.InstCall |LocalIdent:{ 9};ElemType:[14 x i8];Src:[14 x i8]* %2;Indices:[i64 0 i64 0];Typ:i8*;InBounds:true;Metadata:[!dbg !33];
+[MOV] 15:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 10};ElemType:%struct.__sFILE*;Src:%struct.__sFILE** @__stdinp;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 8;Metadata:[!dbg !35];
+[MOV] 16:ir.InstCall; ir.InstCall ;ir.InstICmp |LocalIdent:{ 11};Callee:i8* (i8*, i32, %struct.__sFILE*)* @fgets;Args:[i8* %9 i32 14 %struct.__sFILE* %10];Typ:i8*;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !36];
+[MOV] 17:ir.InstICmp; ir.InstICmp ;|LocalIdent:{ 12};Pred:ne;X:i8* %11;Y:i8* null;Typ:i1;Metadata:[!dbg !37];
+[MOV] 18:ir.TermCondBr; ir.InstICmp|Cond:i1 %12;TargetTrue:label %13;TargetFalse:label %16;Successors:[label %13 label %16];Metadata:[!dbg !38];
+[MOV] 19:ir.Block; label %13|
+[MOV] 20:ir.InstGetElementPtr; ir.InstGetElementPtr ir.InstCall ;ir.InstCall |LocalIdent:{ 14};ElemType:[14 x i8];Src:[14 x i8]* %2;Indices:[i64 0 i64 0];Typ:i8*;InBounds:true;Metadata:[!dbg !39];
+[MOV] 21:ir.InstCall; ir.InstCall ;ir.InstStore |LocalIdent:{ 15};Callee:i32 (i8*)* @atoi;Args:[i8* %14];Typ:i32;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !41];
+[MOV] 22:ir.InstStore; ;|Src:i32 %15;Dst:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !42];
+[MOV] 23:ir.TermBr; |Target:label %17;Successors:[label %17];Metadata:[!dbg !43];
+[MOV] 24:ir.Block; label %16|
+[MOV] 25:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i8*)* @printLine;Args:[i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str, i64 0, i64 0)];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !44];
+[MOV] 26:ir.TermBr; |Target:label %17;Successors:[label %17];Metadata:[];
+[MOV] 27:ir.Block; label %17|
+[MOV] 28:ir.TermBr; |Target:label %18;Successors:[label %18];Metadata:[!dbg !46];
+[MOV] 29:ir.Block; label %18|
+[MOV] 30:ir.InstLoad; ir.InstLoad ;ir.InstICmp |LocalIdent:{ 19};ElemType:i32;Src:i32* @staticFive;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !47];
+[MOV] 31:ir.InstICmp; ir.InstICmp ;|LocalIdent:{ 20};Pred:eq;X:i32 %19;Y:i32 5;Typ:i1;Metadata:[!dbg !49];
+[MOV] 32:ir.TermCondBr; ir.InstICmp|Cond:i1 %20;TargetTrue:label %21;TargetFalse:label %43;Successors:[label %21 label %43];Metadata:[!dbg !50];
+[MOV] 33:ir.Block; label %21|
+[MOV] 34:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata i32* %3 metadata !51 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !54];
+[MOV] 35:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (metadata, metadata, metadata)* @llvm.dbg.declare;Args:[metadata [10 x i32]* %4 metadata !55 metadata !DIExpression()];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !59];
+[MOV] 36:ir.InstBitCast; ir.InstBitCast ir.InstCall ;ir.InstCall |LocalIdent:{ 22};From:[10 x i32]* %4;To:i8*;Metadata:[!dbg !59];
+[MOV] 37:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i8*, i8, i64, i1)* @llvm.memset.p0i8.i64;Args:[i8* align 16 %22 i8 0 i64 40 i1 false];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !59];
+[MOV] 38:ir.InstLoad; ir.InstLoad ;ir.InstICmp |LocalIdent:{ 23};ElemType:i32;Src:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !60];
+[MOV] 39:ir.InstICmp; ir.InstICmp ;|LocalIdent:{ 24};Pred:sge;X:i32 %23;Y:i32 0;Typ:i1;Metadata:[!dbg !62];
+[DEL] 40:ir.TermCondBr; ir.InstICmp|Cond:i1 %24;TargetTrue:label %25;TargetFalse:label %41;Successors:[label %25 label %41];Metadata:[!dbg !63];
+[MOV] 41:ir.Block; label %25|
+[MOV] 42:ir.InstLoad; ir.InstLoad ;ir.InstSExt |LocalIdent:{ 26};ElemType:i32;Src:i32* %1;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !64];
+[MOV] 43:ir.InstSExt; ir.InstSExt ;|LocalIdent:{ 27};From:i32 %26;To:i64;Metadata:[!dbg !66];
+[MOV] 44:ir.InstGetElementPtr; ir.InstGetElementPtr ir.InstStore ;ir.InstStore |LocalIdent:{ 28};ElemType:[10 x i32];Src:[10 x i32]* %4;Indices:[i64 0 i64 %27];Typ:i32*;InBounds:true;Metadata:[!dbg !66];
+[MOV] 45:ir.InstStore; ;|Src:i32 1;Dst:i32* %28;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !67];
+[MOV] 46:ir.InstStore; ;|Src:i32 0;Dst:i32* %3;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !68];
+[MOV] 47:ir.TermBr; |Target:label %29;Successors:[label %29];Metadata:[!dbg !70];
+[MOV] 48:ir.Block; label %29|
+[MOV] 49:ir.InstLoad; ir.InstLoad ;ir.InstICmp |LocalIdent:{ 30};ElemType:i32;Src:i32* %3;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !71];
+[MOV] 50:ir.InstICmp; ir.InstICmp ;|LocalIdent:{ 31};Pred:slt;X:i32 %30;Y:i32 10;Typ:i1;Metadata:[!dbg !73];
+[MOV] 51:ir.TermCondBr; ir.InstICmp|Cond:i1 %31;TargetTrue:label %32;TargetFalse:label %40;Successors:[label %32 label %40];Metadata:[!dbg !74];
+[MOV] 52:ir.Block; label %32|
+[MOV] 53:ir.InstLoad; ir.InstLoad ;ir.InstSExt |LocalIdent:{ 33};ElemType:i32;Src:i32* %3;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !75];
+[MOV] 54:ir.InstSExt; ir.InstSExt ;|LocalIdent:{ 34};From:i32 %33;To:i64;Metadata:[!dbg !77];
+[MOV] 55:ir.InstGetElementPtr; ir.InstGetElementPtr ;ir.InstLoad |LocalIdent:{ 35};ElemType:[10 x i32];Src:[10 x i32]* %4;Indices:[i64 0 i64 %34];Typ:i32*;InBounds:true;Metadata:[!dbg !77];
+[MOV] 56:ir.InstLoad; ir.InstLoad ir.InstCall ;ir.InstCall |LocalIdent:{ 36};ElemType:i32;Src:i32* %35;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !77];
+[MOV] 57:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i32)* @printIntLine;Args:[i32 %36];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !78];
+[MOV] 58:ir.TermBr; |Target:label %37;Successors:[label %37];Metadata:[!dbg !79];
+[MOV] 59:ir.Block; label %37|
+[MOV] 60:ir.InstLoad; ir.InstLoad ;ir.InstAdd |LocalIdent:{ 38};ElemType:i32;Src:i32* %3;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !80];
+[MOV] 61:ir.InstAdd; ir.InstAdd ;ir.InstStore |LocalIdent:{ 39};X:i32 %38;Y:i32 1;Typ:i32;OverflowFlags:[nsw];Metadata:[!dbg !80];
+[MOV] 62:ir.InstStore; ;|Src:i32 %39;Dst:i32* %3;Atomic:false;Volatile:false;SyncScope:;Ordering:none;Align:align 4;Metadata:[!dbg !80];
+[MOV] 63:ir.TermBr; label %29|Target:label %29;Successors:[label %29];Metadata:[!dbg !81 !llvm.loop !82];
+[MOV] 64:ir.Block; label %40|
+[MOV] 65:ir.TermBr; |Target:label %42;Successors:[label %42];Metadata:[!dbg !84];
+[MOV] 66:ir.Block; label %41|
+[MOV] 67:ir.InstCall; ;|LocalIdent:{ 0};Callee:void (i8*)* @printLine;Args:[i8* getelementptr inbounds ([32 x i8], [32 x i8]* @.str.1, i64 0, i64 0)];Typ:void;Tail:none;FastMathFlags:[];CallingConv:none;ReturnAttrs:[];AddrSpace:addrspace(0);FuncAttrs:[];OperandBundles:[];Metadata:[!dbg !85];
+[MOV] 68:ir.TermBr; |Target:label %42;Successors:[label %42];Metadata:[];
+[MOV] 69:ir.Block; label %42|
+[MOV] 70:ir.TermBr; |Target:label %43;Successors:[label %43];Metadata:[!dbg !87];
+[MOV] 71:ir.Block; label %43|
+[MOV] 72:ir.TermRet; |X:<nil>;Metadata:[!dbg !88];
+0:ir.Block,4,1:ir.InstAlloca
+0:ir.Block,3,1:ir.InstAlloca
+0:ir.Block,4,2:ir.InstAlloca
+1:ir.InstAlloca,3,2:ir.InstAlloca
+0:ir.Block,4,3:ir.InstAlloca
+2:ir.InstAlloca,3,3:ir.InstAlloca
+0:ir.Block,4,4:ir.InstAlloca
+3:ir.InstAlloca,3,4:ir.InstAlloca
+0:ir.Block,4,5:ir.InstCall
+4:ir.InstAlloca,3,5:ir.InstCall
+0:ir.Block,4,6:ir.InstStore
+5:ir.InstCall,3,6:ir.InstStore
+0:ir.Block,4,7:ir.InstLoad
+6:ir.InstStore,3,7:ir.InstLoad
+0:ir.Block,4,8:ir.InstICmp
+7:ir.InstLoad,3,8:ir.InstICmp
+8:ir.InstICmp,3,9:ir.TermCondBr
+9:ir.TermCondBr,5,10:ir.Block
+9:ir.TermCondBr,3,10:ir.Block
+9:ir.TermCondBr,5,29:ir.Block
+9:ir.TermCondBr,3,29:ir.Block
+10:ir.Block,4,11:ir.InstCall
+10:ir.Block,3,11:ir.InstCall
+10:ir.Block,4,12:ir.InstBitCast
+11:ir.InstCall,3,12:ir.InstBitCast
+10:ir.Block,4,13:ir.InstCall
+12:ir.InstBitCast,3,13:ir.InstCall
+10:ir.Block,4,14:ir.InstGetElementPtr
+13:ir.InstCall,3,14:ir.InstGetElementPtr
+10:ir.Block,4,15:ir.InstLoad
+14:ir.InstGetElementPtr,3,15:ir.InstLoad
+10:ir.Block,4,16:ir.InstCall
+15:ir.InstLoad,3,16:ir.InstCall
+10:ir.Block,4,17:ir.InstICmp
+16:ir.InstCall,3,17:ir.InstICmp
+17:ir.InstICmp,3,18:ir.TermCondBr
+18:ir.TermCondBr,5,19:ir.Block
+18:ir.TermCondBr,3,19:ir.Block
+18:ir.TermCondBr,5,24:ir.Block
+18:ir.TermCondBr,3,24:ir.Block
+19:ir.Block,4,20:ir.InstGetElementPtr
+19:ir.Block,3,20:ir.InstGetElementPtr
+19:ir.Block,4,21:ir.InstCall
+20:ir.InstGetElementPtr,3,21:ir.InstCall
+19:ir.Block,4,22:ir.InstStore
+21:ir.InstCall,3,22:ir.InstStore
+22:ir.InstStore,3,23:ir.TermBr
+23:ir.TermBr,5,27:ir.Block
+23:ir.TermBr,3,27:ir.Block
+24:ir.Block,4,25:ir.InstCall
+24:ir.Block,3,25:ir.InstCall
+25:ir.InstCall,3,26:ir.TermBr
+26:ir.TermBr,5,27:ir.Block
+26:ir.TermBr,3,27:ir.Block
+27:ir.Block,3,28:ir.TermBr
+28:ir.TermBr,5,29:ir.Block
+28:ir.TermBr,3,29:ir.Block
+29:ir.Block,4,30:ir.InstLoad
+29:ir.Block,3,30:ir.InstLoad
+29:ir.Block,4,31:ir.InstICmp
+30:ir.InstLoad,3,31:ir.InstICmp
+31:ir.InstICmp,3,32:ir.TermCondBr
+32:ir.TermCondBr,5,33:ir.Block
+32:ir.TermCondBr,3,33:ir.Block
+32:ir.TermCondBr,5,71:ir.Block
+32:ir.TermCondBr,3,71:ir.Block
+33:ir.Block,4,34:ir.InstCall
+33:ir.Block,3,34:ir.InstCall
+33:ir.Block,4,35:ir.InstCall
+34:ir.InstCall,3,35:ir.InstCall
+33:ir.Block,4,36:ir.InstBitCast
+35:ir.InstCall,3,36:ir.InstBitCast
+33:ir.Block,4,37:ir.InstCall
+36:ir.InstBitCast,3,37:ir.InstCall
+33:ir.Block,4,38:ir.InstLoad
+37:ir.InstCall,3,38:ir.InstLoad
+33:ir.Block,4,39:ir.InstICmp
+38:ir.InstLoad,3,39:ir.InstICmp
+39:ir.InstICmp,3,40:ir.TermCondBr
+40:ir.TermCondBr,5,41:ir.Block
+40:ir.TermCondBr,3,41:ir.Block
+40:ir.TermCondBr,5,66:ir.Block
+40:ir.TermCondBr,3,66:ir.Block
+41:ir.Block,4,42:ir.InstLoad
+41:ir.Block,3,42:ir.InstLoad
+41:ir.Block,4,43:ir.InstSExt
+42:ir.InstLoad,3,43:ir.InstSExt
+41:ir.Block,4,44:ir.InstGetElementPtr
+43:ir.InstSExt,3,44:ir.InstGetElementPtr
+41:ir.Block,4,45:ir.InstStore
+44:ir.InstGetElementPtr,3,45:ir.InstStore
+41:ir.Block,4,46:ir.InstStore
+45:ir.InstStore,3,46:ir.InstStore
+46:ir.InstStore,3,47:ir.TermBr
+47:ir.TermBr,5,48:ir.Block
+47:ir.TermBr,3,48:ir.Block
+48:ir.Block,4,49:ir.InstLoad
+48:ir.Block,3,49:ir.InstLoad
+48:ir.Block,4,50:ir.InstICmp
+49:ir.InstLoad,3,50:ir.InstICmp
+50:ir.InstICmp,3,51:ir.TermCondBr
+51:ir.TermCondBr,5,52:ir.Block
+51:ir.TermCondBr,3,52:ir.Block
+51:ir.TermCondBr,5,64:ir.Block
+51:ir.TermCondBr,3,64:ir.Block
+52:ir.Block,4,53:ir.InstLoad
+52:ir.Block,3,53:ir.InstLoad
+52:ir.Block,4,54:ir.InstSExt
+53:ir.InstLoad,3,54:ir.InstSExt
+52:ir.Block,4,55:ir.InstGetElementPtr
+54:ir.InstSExt,3,55:ir.InstGetElementPtr
+52:ir.Block,4,56:ir.InstLoad
+55:ir.InstGetElementPtr,3,56:ir.InstLoad
+52:ir.Block,4,57:ir.InstCall
+56:ir.InstLoad,3,57:ir.InstCall
+57:ir.InstCall,3,58:ir.TermBr
+58:ir.TermBr,5,59:ir.Block
+58:ir.TermBr,3,59:ir.Block
+59:ir.Block,4,60:ir.InstLoad
+59:ir.Block,3,60:ir.InstLoad
+59:ir.Block,4,61:ir.InstAdd
+60:ir.InstLoad,3,61:ir.InstAdd
+59:ir.Block,4,62:ir.InstStore
+61:ir.InstAdd,3,62:ir.InstStore
+62:ir.InstStore,3,63:ir.TermBr
+63:ir.TermBr,5,48:ir.Block
+63:ir.TermBr,3,48:ir.Block
+64:ir.Block,3,65:ir.TermBr
+65:ir.TermBr,5,69:ir.Block
+65:ir.TermBr,3,69:ir.Block
+66:ir.Block,4,67:ir.InstCall
+66:ir.Block,3,67:ir.InstCall
+67:ir.InstCall,3,68:ir.TermBr
+68:ir.TermBr,5,69:ir.Block
+68:ir.TermBr,3,69:ir.Block
+69:ir.Block,3,70:ir.TermBr
+70:ir.TermBr,5,71:ir.Block
+70:ir.TermBr,3,71:ir.Block
+71:ir.Block,3,72:ir.TermRet
+44:ir.InstGetElementPtr,1,45:ir.InstStore
+45:ir.InstStore,2,44:ir.InstGetElementPtr
+53:ir.InstLoad,1,54:ir.InstSExt
+54:ir.InstSExt,2,53:ir.InstLoad
+2:ir.InstAlloca,1,12:ir.InstBitCast
+12:ir.InstBitCast,2,2:ir.InstAlloca
+2:ir.InstAlloca,1,14:ir.InstGetElementPtr
+14:ir.InstGetElementPtr,2,2:ir.InstAlloca
+2:ir.InstAlloca,1,20:ir.InstGetElementPtr
+20:ir.InstGetElementPtr,2,2:ir.InstAlloca
+15:ir.InstLoad,1,16:ir.InstCall
+16:ir.InstCall,2,15:ir.InstLoad
+20:ir.InstGetElementPtr,1,21:ir.InstCall
+21:ir.InstCall,2,20:ir.InstGetElementPtr
+21:ir.InstCall,1,22:ir.InstStore
+22:ir.InstStore,2,21:ir.InstCall
+4:ir.InstAlloca,1,36:ir.InstBitCast
+36:ir.InstBitCast,2,4:ir.InstAlloca
+4:ir.InstAlloca,1,44:ir.InstGetElementPtr
+44:ir.InstGetElementPtr,2,4:ir.InstAlloca
+4:ir.InstAlloca,1,55:ir.InstGetElementPtr
+55:ir.InstGetElementPtr,2,4:ir.InstAlloca
+36:ir.InstBitCast,1,37:ir.InstCall
+37:ir.InstCall,2,36:ir.InstBitCast
+30:ir.InstLoad,1,31:ir.InstICmp
+31:ir.InstICmp,2,30:ir.InstLoad
+42:ir.InstLoad,1,43:ir.InstSExt
+43:ir.InstSExt,2,42:ir.InstLoad
+60:ir.InstLoad,1,61:ir.InstAdd
+61:ir.InstAdd,2,60:ir.InstLoad
+12:ir.InstBitCast,1,13:ir.InstCall
+13:ir.InstCall,2,12:ir.InstBitCast
+14:ir.InstGetElementPtr,1,16:ir.InstCall
+16:ir.InstCall,2,14:ir.InstGetElementPtr
+38:ir.InstLoad,1,39:ir.InstICmp
+39:ir.InstICmp,2,38:ir.InstLoad
+3:ir.InstAlloca,1,46:ir.InstStore
+46:ir.InstStore,2,3:ir.InstAlloca
+3:ir.InstAlloca,1,49:ir.InstLoad
+49:ir.InstLoad,2,3:ir.InstAlloca
+3:ir.InstAlloca,1,53:ir.InstLoad
+53:ir.InstLoad,2,3:ir.InstAlloca
+3:ir.InstAlloca,1,60:ir.InstLoad
+60:ir.InstLoad,2,3:ir.InstAlloca
+3:ir.InstAlloca,1,62:ir.InstStore
+62:ir.InstStore,2,3:ir.InstAlloca
+55:ir.InstGetElementPtr,1,56:ir.InstLoad
+56:ir.InstLoad,2,55:ir.InstGetElementPtr
+56:ir.InstLoad,1,57:ir.InstCall
+57:ir.InstCall,2,56:ir.InstLoad
+1:ir.InstAlloca,1,6:ir.InstStore
+6:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,22:ir.InstStore
+22:ir.InstStore,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,38:ir.InstLoad
+38:ir.InstLoad,2,1:ir.InstAlloca
+1:ir.InstAlloca,1,42:ir.InstLoad
+42:ir.InstLoad,2,1:ir.InstAlloca
+7:ir.InstLoad,1,8:ir.InstICmp
+8:ir.InstICmp,2,7:ir.InstLoad
+16:ir.InstCall,1,17:ir.InstICmp
+17:ir.InstICmp,2,16:ir.InstCall
+49:ir.InstLoad,1,50:ir.InstICmp
+50:ir.InstICmp,2,49:ir.InstLoad
+61:ir.InstAdd,1,62:ir.InstStore
+62:ir.InstStore,2,61:ir.InstAdd
+18:ir.TermCondBr,2,17:ir.InstICmp
+17:ir.InstICmp,1,18:ir.TermCondBr
+32:ir.TermCondBr,2,31:ir.InstICmp
+31:ir.InstICmp,1,32:ir.TermCondBr
+40:ir.TermCondBr,2,39:ir.InstICmp
+39:ir.InstICmp,1,40:ir.TermCondBr
+51:ir.TermCondBr,2,50:ir.InstICmp
+50:ir.InstICmp,1,51:ir.TermCondBr
+9:ir.TermCondBr,2,8:ir.InstICmp
+8:ir.InstICmp,1,9:ir.TermCondBr

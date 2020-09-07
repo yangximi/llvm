@@ -165,3 +165,65 @@ func (g *Global) LLString() string {
 	}
 	return buf.String()
 }
+
+func (g *Global) Hash() string {
+	buf := &strings.Builder{}
+
+	if g.Linkage != enum.LinkageNone {
+		fmt.Fprintf(buf, " %s", g.Linkage)
+	}
+	if g.Preemption != enum.PreemptionNone {
+		fmt.Fprintf(buf, " %s", g.Preemption)
+	}
+	if g.Visibility != enum.VisibilityNone {
+		fmt.Fprintf(buf, " %s", g.Visibility)
+	}
+	if g.DLLStorageClass != enum.DLLStorageClassNone {
+		fmt.Fprintf(buf, " %s", g.DLLStorageClass)
+	}
+	if g.TLSModel != enum.TLSModelNone {
+		fmt.Fprintf(buf, " %s", tlsModelString(g.TLSModel))
+	}
+	if g.UnnamedAddr != enum.UnnamedAddrNone {
+		fmt.Fprintf(buf, " %s", g.UnnamedAddr)
+	}
+	if g.AddrSpace != 0 {
+		fmt.Fprintf(buf, " %s", g.AddrSpace)
+	}
+	if g.ExternallyInitialized {
+		buf.WriteString(" externally_initialized")
+	}
+	if g.Immutable {
+		buf.WriteString(" constant")
+	} else {
+		buf.WriteString(" global")
+	}
+	fmt.Fprintf(buf, " %s", g.ContentType)
+	if g.Init != nil {
+		// Global definition.
+		fmt.Fprintf(buf, " %s", g.Init.Ident())
+	}
+	if g.Section != "" {
+		fmt.Fprintf(buf, ", section %s", quote(g.Section))
+	}
+	if g.Partition != "" {
+		fmt.Fprintf(buf, ", partition %s", quote(g.Partition))
+	}
+	if g.Comdat != nil {
+		if g.Comdat.Name == g.Name() {
+			buf.WriteString(", comdat")
+		} else {
+			fmt.Fprintf(buf, ", %s", g.Comdat)
+		}
+	}
+	if g.Align != 0 {
+		fmt.Fprintf(buf, ", %s", g.Align)
+	}
+	// for _, md := range g.Metadata {
+	// 	fmt.Fprintf(buf, ", %s", md)
+	// }
+	for _, attr := range g.FuncAttrs {
+		fmt.Fprintf(buf, " %s", attr)
+	}
+	return buf.String()
+}

@@ -1,0 +1,15 @@
+8:ir.InstLoad
+10:ir.InstGetElementPtr
+11:ir.InstTrunc
+4:ir.InstCall
+6:ir.InstICmp
+5:ir.InstStore
+7:ir.TermBr
+12:ir.InstSExt
+2:ir.TermCondBr
+3:ir.InstAlloca
+14:ir.TermRet
+0:UNKOWN
+9:ir.InstBitCast
+1:ir.Block
+13:ir.InstAdd

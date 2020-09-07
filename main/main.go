@@ -9,19 +9,62 @@ import (
 	"os"
 	"strings"
 
+	"github.com/awalterschulze/gographviz"
 	"github.com/llir/llvm/asm"
+	"github.com/llir/llvm/ir"
 )
 
-func main() {
+func testcase() (*ir.Module, []string) {
+	//Testcase
+	// testcase := "/Users/ys/Project/llvm/main/CWE121_Stack_Based_Buffer_Overflow__src_char_declare_cat_41.ll"
+	testcase := "/Users/ys/Desktop/CWE121_Stack_Based_Buffer_Overflow__src_char_declare_cpy_05.ll"
+	mod, err := asm.ParseFile(testcase)
+	if err != nil {
+		panic(err)
+	}
+	// mapping := asm.NewASTMapping()
+	// mapping.FuncCompare(mod, testcase)
+	// dst, _ := asm.ParseFile(testcase)
+	mapping := asm.NewASTMapping()
+	filePath := "/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/s01/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll"
+	mapping.FuncCompare(mod, filePath)
+	// script := mapping.AstCompare(src, dst)
+	// fmt.Println(script)
+	files := []string{testcase}
+	return mod, files
+}
 
-	directory := "/home/ys/project/C/testcases"
+func testgraphviz() {
+	graphAst, _ := gographviz.ParseString(`digraph G {}`)
+	graph := gographviz.NewGraph()
+	if err := gographviz.Analyse(graphAst, graph); err != nil {
+		panic(err)
+	}
+	graph.AddNode("G", "a", nil)
+	graph.AddNode("G", "b", nil)
+	graph.AddEdge("a", "b", true, nil)
+	output := graph.String()
+	fmt.Println(output)
+}
+
+func main() {
+	_, _ = testcase()
+	// testgraphviz()
+	//Step1 get samples
+	directory := "/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow"
 	files, err := GetAllFiles(directory)
 	if err != nil {
 		panic(err)
 	}
+	GenerateSamples(files)
+	GenerateVocabulary(files)
+
+}
+
+func GenerateSamples(files []string) {
 	for _, file := range files {
 		mod, err := asm.ParseFile(file)
-		fmt.Println(file)
+		fmt.Println("\n" + file + "\n")
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -29,15 +72,17 @@ func main() {
 		mapping := asm.NewASTMapping()
 		mapping.FuncCompare(mod, file)
 	}
+}
 
-	//Testcase
-	// filePath := "/Users/ys/Project/C/testcases/CWE121_Stack_Based_Buffer_Overflow/s01/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll"
-	// src, _ := asm.ParseFile("/home/sqy5331/project/llvm/main/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
-	// dst, _ := asm.ParseFile("/home/sqy5331/project/llvm/main/CWE121_Stack_Based_Buffer_Overflow__CWE129_connect_socket_53d.ll")
-	// mapping := asm.NewASTMapping()
-	// mapping.FuncCompare(src, filePath)
-	// script := mapping.AstCompare(src, dst)
-	// fmt.Println(script)
+func GenerateVocabulary(files []string) *asm.Vocabulary {
+	vocab := asm.NewVocabulary()
+	vocab.CollectTypeFromFiles(files)
+	//Print to File
+	filepath := "data/vocab.txt"
+	vocab.PrintToFile(filepath)
+	fmt.Println(len(vocab.NodeType))
+	fmt.Println(vocab)
+	return vocab
 }
 
 func GetAllFiles(dirPth string) (files []string, err error) {
